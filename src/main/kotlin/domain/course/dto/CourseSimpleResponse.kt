@@ -18,4 +18,5 @@ data class CourseSimpleResponse(
             imageUrl = course.imageUrl,
             rate = course.rate
         )
+    }
 }
