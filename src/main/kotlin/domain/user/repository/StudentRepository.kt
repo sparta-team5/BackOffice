@@ -1,5 +1,10 @@
 package domain.user.repository
 
-interface StudentRepository {
+import domain.user.model.Student
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface StudentRepository : JpaRepository<Student, Long> {
+
+    fun existByEmail(email:String):Boolean
 
 }
