@@ -54,7 +54,7 @@ class CourseService(
 
     fun getFilteredCourses(cursor: CursorRequest, filter: FilteringRequest, studentId: Long?): CursorPageResponse {
         val pageable = PageRequest.of(0, cursor.page)
-        val courseSlice: Slice<Course> = courseRepository.findAllByCursorAndFilter(cursor.cursor, pageable, filter) // 동적쿼리필요
+        val courseSlice: Slice<Course> = courseRepository.findAllByCursorAndFilter(cursor.cursor, pageable, cursor.orderBy, filter) // 동적쿼리필요
         val nextCursor: Int? = courseSlice.nextPageable().pageNumber ?: null
 
         val pageResponse = if (studentId != null) {
