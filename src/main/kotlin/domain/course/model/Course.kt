@@ -10,35 +10,36 @@ import java.time.LocalDateTime
 @Table(name = "course")
 class Course(
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     var title: String,
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     var description: String,
 
     @ManyToOne
-    @JoinColumn(name = "tutor_id")
+    @JoinColumn(name = "tutor_id", nullable = false)
     val tutor: Tutor,
 
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course", orphanRemoval = true)
     val lectures: MutableList<Lecture> = mutableListOf(),
 
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course", orphanRemoval = true)
     val reviews: MutableList<Review> = mutableListOf(),
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", nullable = true)
     var imageUrl: String,
 
-    @Column(name = "category")
+    @Column(name = "category", nullable = true)
     var category: Category,
 
-    @Column(name = "view_count")
+    @Column(name = "view_count", nullable = false)
     var viewCount: Long,
 
     @Column(name = "rate")
-    var rate: Int?,
+    var rate: Int?, // averageRate 가 되어야 맞는건지 생각이 듭니다
+    // 백오피스 쪽 생각하면 rate 를 따로 테이블로 관리하고 해당 courseRate 의 average 만 표기하는게 맞지 않을까요?
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     val createdAt: LocalDateTime,
 
     ) {
