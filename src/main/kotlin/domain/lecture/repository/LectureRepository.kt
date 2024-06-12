@@ -1,5 +1,8 @@
 package domain.lecture.repository
 
-interface LectureRepository {
-    fun findByCourseIdAndId(courseId: Long, id: Long) : Unit
+import domain.lecture.model.Lecture
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface LectureRepository : JpaRepository<Lecture, Long> {
+    fun findByIdAndCourseId(id: Long, courseId: Long): Lecture?
 }
