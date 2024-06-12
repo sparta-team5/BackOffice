@@ -30,7 +30,7 @@ class Course(
     var imageUrl: String,
 
     @Column(name = "category", nullable = true)
-    var category: Category,
+    var category: Category, // 카테고리가 중복 (Kotlin + Spring) 될 수 있을것 같은데 그부분은 그냥 넘겼습니다
 
     @Column(name = "view_count", nullable = false)
     var viewCount: Long,
