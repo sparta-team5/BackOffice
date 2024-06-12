@@ -1,5 +1,8 @@
 package domain.course.dto
 
+import domain.course.model.Category
+import domain.course.model.Course
+
 
 data class CourseResponse(
     val title: String,
@@ -12,4 +15,19 @@ data class CourseResponse(
     val isSubscribed: Boolean = false,
     val viewCount: Long,
     val rate: Int?
-)
+) {
+    companion object {
+        fun from(course: Course, isBookMarked: Boolean, isSubscribed: Boolean) = CourseResponse(
+            title = course.title,
+            tutor = course.tutor.name,
+            category = course.category,
+            description = course.description,
+            isBookMarked = isBookMarked,
+            isSubscribed = isSubscribed,
+            lectures = course.lectures, //toResponse?
+            reviews = course.reviews, //toResponse?
+            viewCount = course.viewCount,
+            rate = course.rate
+        )
+    }
+}
