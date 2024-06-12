@@ -23,19 +23,16 @@ class CourseService(
 
     fun getAllCourses(cursor: CursorRequest, studentId: Long?): CursorPageResponse {
         val pageable = PageRequest.of(0, cursor.page)
-        val courseSlice: Slice<Course> = courseRepository.findAllCourse(cursor.cursor, pageable, cursor.orderBy) // 동적쿼리?
-        val nextCursor = if(courseSlice.hasNext()) courseSlice.nextPageable().pageNumber else null
+        val courseSlice: Slice<Course> = courseRepository.findAllCourse(cursor.cursor, pageable, cursor.orderBy)
+        val nextCursor = if (courseSlice.hasNext()) courseSlice.nextPageable().pageNumber else null
 
         val pageResponse = if (studentId != null) {
             courseSlice.content.map {
-                it.toListResponse(
-                    existBookmark(studentId, it.id!!),
-                    existSubscribe(studentId, it.id)
-                )
+                CourseListResponse.from(it, existBookmark(studentId, it.id!!), existSubscribe(studentId, it.id))
             }
         } else {
             courseSlice.content.map {
-                it.toListResponse(false, false)
+                CourseListResponse.from(it, isBookmarked = false, isSubscribed = false)
             }
         }
         return CursorPageResponse(pageResponse, nextCursor)
@@ -44,33 +41,31 @@ class CourseService(
     fun getCourseById(courseId: Long, studentId: Long?): CourseResponse {
         val course = courseRepository.findByIdOrNull(courseId)
             ?: throw RuntimeException("Course not found")
-        course.viewCount ++
+        course.viewCount++
         return if (studentId != null) {
-            course.toResponse(existBookmark(studentId, courseId), existSubscribe(studentId, courseId))
+            CourseResponse.from(course, existBookmark(studentId, courseId), existSubscribe(studentId, courseId))
         } else {
-            course.toResponse(false, false)
+            CourseResponse.from(course, false, false)
         }
     }
 
     fun getFilteredCourses(cursor: CursorRequest, filter: FilteringRequest, studentId: Long?): CursorPageResponse {
         val pageable = PageRequest.of(0, cursor.page)
-        val courseSlice: Slice<Course> = courseRepository.findAllByCursorAndFilter(cursor.cursor, pageable, cursor.orderBy, filter) // 동적쿼리필요
+        val courseSlice: Slice<Course> =
+            courseRepository.findAllByCursorAndFilter(cursor.cursor, pageable, cursor.orderBy, filter) // 동적쿼리필요
         val nextCursor: Int? = courseSlice.nextPageable().pageNumber ?: null
 
         val pageResponse = if (studentId != null) {
             courseSlice.content.map {
-                it.toListResponse(
-                    existBookmark(studentId, it.id!!),
-                    existSubscribe(studentId, it.id)
-                )
+                CourseListResponse.from(it, existBookmark(studentId, it.id!!), existSubscribe(studentId, it.id))
             }
         } else {
             courseSlice.content.map {
-                it.toListResponse(false, false)
+                it.toListResponse(isBookmarked = false, isSubscribed = false)
             }
         }
+        return CursorPageResponse(pageResponse, nextCursor)
     }
-    return CursorPageResponse(pageResponse, nextCursor)
 
 
     fun createCourse(request: CourseRequest, tutorId: Long): CourseSimpleResponse {
@@ -85,10 +80,11 @@ class CourseService(
                 category = request.category,
                 imageUrl = request.imageUrl,
                 viewCount = 0,
-                rate = null,
+                rate = 0.0,
                 createdAt = LocalDateTime.now()
             )
-        ).toSimpleResponse()
+        )
+        return CourseSimpleResponse.from(course)
     }
 
     @Transactional
@@ -105,7 +101,7 @@ class CourseService(
             imageUrl = request.imageUrl
         }
         println("Course ${course.id} has been successfully updated")
-        return course.toSimpleResponse()
+        return CourseSimpleResponse.from(course)
     }
 
     fun deleteCourseById(courseId: Long, tutorId: Long) {

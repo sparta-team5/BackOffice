@@ -1,14 +1,13 @@
 package domain.course.dto
 
-import domain.course.model.Category
 import domain.course.model.Course
 
 data class CourseSimpleResponse(
     val title: String,
     val description: String,
     val imageUrl: String,
-    val category: Category,
-    val rate: Int?,
+    val category: String,
+    val rate: Double,
 ) {
     companion object {
         fun from(course: Course) = CourseSimpleResponse(
