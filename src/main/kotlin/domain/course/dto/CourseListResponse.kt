@@ -6,4 +6,8 @@ data class CourseListResponse(
     val description: String,
     val imageUrl: String,
     val category: Category,
+    val isBookmarked: Boolean = false,
+    val isSubscribed: Boolean = false,
+    val viewCount: Long,
+    val rate: Int?
 )
