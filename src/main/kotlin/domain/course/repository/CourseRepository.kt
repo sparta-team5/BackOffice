@@ -1,4 +1,7 @@
 package domain.course.repository
 
-interface CourseRepository {
+import domain.course.model.Course
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface CourseRepository : JpaRepository<Course, Long> {
 }
