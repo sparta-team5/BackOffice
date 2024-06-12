@@ -44,6 +44,7 @@ class CourseService(
     fun getCourseById(courseId: Long, studentId: Long?): CourseResponse {
         val course = courseRepository.findByIdOrNull(courseId)
             ?: throw RuntimeException("Course not found")
+        course.viewCount ++
         return if (studentId != null) {
             course.toResponse(existBookmark(studentId, courseId), existSubscribe(studentId, courseId))
         } else {
