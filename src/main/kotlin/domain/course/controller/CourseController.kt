@@ -14,7 +14,7 @@ class CourseController(
 
     @GetMapping()
     fun getAllCourses(
-        @ModelAttribute cursor: CursorResponse
+        @ModelAttribute cursor: CursorRequest
     ): ResponseEntity<CursorPageResponse> {
         // val studentId : Long? = 있으면 받고 없으면 null
         return ResponseEntity
@@ -34,13 +34,13 @@ class CourseController(
 
     @GetMapping("/filter") //(category=?title=?rate=?...)
     fun getFilteredCourses(
-        @ModelAttribute cursorResponse: CursorResponse,
+        @ModelAttribute cursorRequest: CursorRequest,
         @ModelAttribute filter: FilteringDto
     ): ResponseEntity<CursorPageResponse> {
         // val studentId : Long? = 있으면 받고 없으면 null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getFilteredCourses(cursorResponse, filter, studentId))
+            .body(courseService.getFilteredCourses(cursorRequest, filter, studentId))
     }
 
     @PostMapping()
