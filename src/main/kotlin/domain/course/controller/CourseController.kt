@@ -35,7 +35,7 @@ class CourseController(
     @GetMapping("/filter") //(category=?title=?rate=?...)
     fun getFilteredCourses(
         @ModelAttribute cursorRequest: CursorRequest,
-        @ModelAttribute filter: FilteringDto
+        @ModelAttribute filter: FilteringRequest
     ): ResponseEntity<CursorPageResponse> {
         // val studentId : Long? = 있으면 받고 없으면 null
         return ResponseEntity

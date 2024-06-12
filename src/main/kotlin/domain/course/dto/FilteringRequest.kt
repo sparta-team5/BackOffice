@@ -1,6 +1,6 @@
 package domain.course.dto
 
-data class FilteringDto(
+data class FilteringRequest(
     val title: String,
     val tutorName: String,
     val category: Category,
