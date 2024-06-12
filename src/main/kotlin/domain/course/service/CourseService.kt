@@ -2,9 +2,6 @@ package domain.course.service
 
 import domain.course.dto.*
 import domain.course.model.Course
-import domain.course.model.toListResponse
-import domain.course.model.toResponse
-import domain.course.model.toSimpleResponse
 import domain.course.repository.CourseRepository
 import domain.user.repository.StudentRepository
 import domain.user.repository.TutorRepository
