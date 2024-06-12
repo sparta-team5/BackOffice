@@ -23,7 +23,7 @@ class CourseService(
 
     fun getAllCourses(cursor: CursorRequest, studentId: Long?): CursorPageResponse {
         val pageable = PageRequest.of(cursor.cursor, cursor.page, Sort.Direction.DESC, cursor.orderBy)
-        val courseSlice: Slice<Course> = courseRepository.findAllByCursor(pageable) // 동적쿼리?
+        val courseSlice: Slice<Course> = courseRepository.findAllCourse(pageable) // 동적쿼리?
         val nextCursor: Int? = courseSlice.nextPageable().pageNumber ?: null
 
         val pageResponse = if (studentId != null) {
