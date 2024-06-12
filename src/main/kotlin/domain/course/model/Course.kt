@@ -75,7 +75,7 @@ fun Course.toListResponse(isBookmarked: Boolean, isSubscribed: Boolean): CourseL
     )
 }
 
-fun Course.toSimpleResponse() : CourseSimpleResponse {
+fun Course.toSimpleResponse(): CourseSimpleResponse {
     return CourseSimpleResponse(
         title = title,
         description = description,
