@@ -16,18 +16,20 @@ class CourseController(
     fun getAllCourses(
         @ModelAttribute cursor: CursorDto
     ): ResponseEntity<CursorPageResponse> {
+        // val studentId : Long? = 있으면 받고 없으면 null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getAllCourses(cursor))
+            .body(courseService.getAllCourses(cursor, studentId))
     }
 
     @GetMapping("/{courseId}")
     fun getCourseById(
         @PathVariable courseId: Long,
     ): ResponseEntity<CourseResponse> {
+        // val studentId : Long? = 있으면 받고 없으면 null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getCourseById(courseId))
+            .body(courseService.getCourseById(courseId, studentId))
     }
 
     @GetMapping("/filter") //(category=?title=?rate=?...)
@@ -35,9 +37,10 @@ class CourseController(
         @ModelAttribute cursorDto: CursorDto,
         @ModelAttribute filter: FilteringDto
     ): ResponseEntity<CursorPageResponse> {
+        // val studentId : Long? = 있으면 받고 없으면 null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getFilteredCourses(cursorDto, filter))
+            .body(courseService.getFilteredCourses(cursorDto, filter, studentId))
     }
 
     @PostMapping()
