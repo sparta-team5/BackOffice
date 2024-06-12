@@ -4,6 +4,7 @@ import domain.course.model.Course
 
 
 data class CourseResponse(
+    val courseId: Long?,
     val title: String,
     val tutor: String,
     val category: String,
@@ -17,6 +18,7 @@ data class CourseResponse(
 ) {
     companion object {
         fun from(course: Course, isBookMarked: Boolean, isSubscribed: Boolean) = CourseResponse(
+            courseId = course.id,
             title = course.title,
             tutor = course.tutor.name,
             category = course.category,
