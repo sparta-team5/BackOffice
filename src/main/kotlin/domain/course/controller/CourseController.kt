@@ -14,7 +14,7 @@ class CourseController(
 
     @GetMapping()
     fun getAllCourses(
-        @ModelAttribute cursor: CursorDto
+        @ModelAttribute cursor: CursorResponse
     ): ResponseEntity<CursorPageResponse> {
         // val studentId : Long? = 있으면 받고 없으면 null
         return ResponseEntity
@@ -34,13 +34,13 @@ class CourseController(
 
     @GetMapping("/filter") //(category=?title=?rate=?...)
     fun getFilteredCourses(
-        @ModelAttribute cursorDto: CursorDto,
+        @ModelAttribute cursorResponse: CursorResponse,
         @ModelAttribute filter: FilteringDto
     ): ResponseEntity<CursorPageResponse> {
         // val studentId : Long? = 있으면 받고 없으면 null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getFilteredCourses(cursorDto, filter, studentId))
+            .body(courseService.getFilteredCourses(cursorResponse, filter, studentId))
     }
 
     @PostMapping()
@@ -96,7 +96,7 @@ class CourseController(
             .body(courseService.removeBookmark(courseId, studentId))
     }
 
-    @PostMapping("/{courseId}/subscribe")
+    @PostMapping("/{courseId}/subscription")
     fun subscribeCourse(
         @PathVariable courseId: Long,
     ): ResponseEntity<Unit> {
