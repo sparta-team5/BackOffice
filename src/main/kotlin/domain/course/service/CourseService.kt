@@ -61,7 +61,7 @@ class CourseService(
             }
         } else {
             courseSlice.content.map {
-                it.toListResponse(isBookmarked = false, isSubscribed = false)
+                CourseListResponse.from(it, isBookmarked = false, isSubscribed = false)
             }
         }
         return CursorPageResponse(pageResponse, nextCursor)
@@ -148,7 +148,7 @@ class CourseService(
             throw RuntimeException("Already subscribed")
         }
         student.apply {
-            student.subscribe.add(course)
+            student.subscription.add(course)
         }
         println("Course ${course.id} is now subscribed")
     }
