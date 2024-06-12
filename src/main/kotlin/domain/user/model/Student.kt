@@ -11,7 +11,7 @@ class Student(
     @Column(name="email", nullable=false)
     val email:String,
 
-    @Column(name="password", nullable=true) //todo: nullable?
+    @Column(name="password", nullable=true)
     val password:String,
 
     @Column(name="provider_name", nullable=true)
@@ -21,7 +21,7 @@ class Student(
     val provider_id:String,
 
     @Column(name="prev_passwords", nullable=true)
-    val prev_passwords:String,
+    val prev_passwords:List<String>,
     ) {
 
     @Id

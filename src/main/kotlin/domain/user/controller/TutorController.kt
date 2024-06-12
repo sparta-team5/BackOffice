@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/tutors")
 class TutorController(
-    private val userService : UserService,
-    private val reviewService : ReviewService,
+    private val userService: UserService,
+    private val reviewService: ReviewService,
 ) {
 
 //    @PostMapping()
@@ -26,7 +26,7 @@ class TutorController(
 //    }
 
     @GetMapping("/{tutorId}")
-    fun getTutorDetail(@PathVariable tutorId :Long):ResponseEntity<TutorResponseDto>{
+    fun getTutorDetail(@PathVariable tutorId: Long): ResponseEntity<TutorResponseDto> {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getTutorById(tutorId))
@@ -34,77 +34,49 @@ class TutorController(
 
     @PutMapping("/{tutorId}")
     fun updateTutor(
-        @PathVariable tutorId :Long,
-    @RequestBody updateTutorRequest : UpdateTutorRequestDto
-    ):ResponseEntity<TutorResponseDto>{
+        @PathVariable tutorId: Long,
+        @RequestBody updateTutorRequest: UpdateTutorRequestDto
+    ): ResponseEntity<TutorResponseDto> {
 
-        return try {
-            ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.updateTutorById(tutorId, updateTutorRequest))
-        } catch (e: IllegalAccessException) {
-            ResponseEntity.status(403).build()
-        }
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.updateTutorById(tutorId, updateTutorRequest))
     }
 
     @DeleteMapping("/{tutorId}")
     fun deleteTutor(@PathVariable tutorId: Long): ResponseEntity<Unit> {
 
-        return try {
-            ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .body(userService.deleteTutorById(tutorId))
-        } catch (e: IllegalAccessException) {
-            ResponseEntity
-                .status(403).build()
-        }
+        return ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .body(userService.deleteTutorById(tutorId))
+
     }
 
     @GetMapping("/{tutorId}/reviews")
-    fun getAllReviewsByTutor(@PathVariable tutorId: Long):ResponseEntity<List<>> {
+    fun getAllReviewsByTutor(@PathVariable tutorId: Long): ResponseEntity<List<ReviewResponse>> {
 
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(reviewService.getAllReviewsByTutor(tutorId))
-    }//todo : 리뷰 response dto 이름 물어보기
+    }
 
     //todo
 //    @PostMapping("/{tutorId}/follow")
 //    fun followTutor(
 //        @PathVariable tutorId :Long,
 //    ): ResponseEntity<TutorResponseDto>{
-//        return try {
-//            ResponseEntity
+//        return ResponseEntity
 //                .status(HttpStatus.OK)
 //                .body(userService.followStudentAndUser(tutorId))
-//        } catch (e: IllegalAccessException) {
-//            ResponseEntity
-//                .status(403).build()
-//        }
 //    }
 //
 //    @DeleteMapping("/{tutorId}/follow")
 //    fun unfollowTutor(
 //        @PathVariable tutorId :Long,
 //    ):ResponseEntity<TutorResponseDto>{
-//        return try {
-//            ResponseEntity
+//        return  ResponseEntity
 //                .status(HttpStatus.OK)
 //                .body(userService.unfollowStudentAndUser(tutorId))
-//        } catch (e: IllegalAccessException) {
-//            ResponseEntity
-//                .status(403).build()
-//        }
-//    }
-
-
-
-
-
-
-
-
-
-
-
-}
+//
+//
+//}

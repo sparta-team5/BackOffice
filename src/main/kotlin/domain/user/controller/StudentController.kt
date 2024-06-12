@@ -8,40 +8,40 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/students/{student_id}")
+@RequestMapping("/students/{studentId}")
 class StudentController (
     private val userService : UserService,
         ){
 
     @GetMapping()
-    fun getStudent(@PathVariable student_id :Long): ResponseEntity<StudentResponseDto> {
+    fun getStudent(@PathVariable studentId :Long): ResponseEntity<StudentResponseDto> {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getStudentById(student_id))
+            .body(userService.getStudentById(studentId))
     }
 
     @PutMapping()
     fun updateStudent(
-        @PathVariable student_id :Long,
+        @PathVariable studentId :Long,
         @RequestBody updateStudentRequest : UpdateStudentRequestDto
     ): ResponseEntity<StudentResponseDto> {
 
         return try {
             ResponseEntity
                 .status(HttpStatus.OK)
-                .body(userService.updateStudentById(student_id, updateStudentRequest))
+                .body(userService.updateStudentById(studentId, updateStudentRequest))
         } catch (e: IllegalAccessException) {
             ResponseEntity.status(403).build()
         }
     }
 
     @DeleteMapping()
-    fun deleteStudent(@PathVariable student_id: Long): ResponseEntity<Unit> {
+    fun deleteStudent(@PathVariable studentId: Long): ResponseEntity<Unit> {
 
         return try {
             ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
-                .body(userService.deleteStudentById(student_id))
+                .body(userService.deleteStudentById(studentId))
         } catch (e: IllegalAccessException) {
             ResponseEntity
                 .status(403).build()

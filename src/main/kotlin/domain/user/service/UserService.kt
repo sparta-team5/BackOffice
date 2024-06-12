@@ -16,7 +16,7 @@ class UserService(
 
 
     fun getStudentById(studentId:Long) : StudentResponseDto {
-        val student = studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("Student", studentId)
+        val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")
 
         return StudentResponseDto.from(student)
     }
@@ -25,7 +25,7 @@ class UserService(
     @Transactional
     fun updateStudentById( studentId :Long, request : UpdateStudentRequestDto) : StudentResponseDto {
 
-        val student = studentRepository.findByIdOrNull(studentId)?:throw ModelNotFoundException("Student", studentId)
+        val student = studentRepository.findByIdOrNull(studentId)?:throw RuntimeException("Student")
         //todo : null이면 예외 던지기
 
         //todo : user가져오기
@@ -38,7 +38,7 @@ class UserService(
     }
 
     fun deleteStudentById(studentId :Long){
-        val student = studentRepository.findByIdOrNull(studentId)?:throw ModelNotFoundException("Student", studentId)
+        val student = studentRepository.findByIdOrNull(studentId)?:throw RuntimeException("Student")
         //todo : null이면 예외 던지기
 
         //todo : 토큰에서 user가져오기
@@ -55,7 +55,7 @@ class UserService(
 
     fun getTutorById(tutorId : Long): TutorResponseDto{
 
-        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("Tutor", tutorId)
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
 
         return TutorResponseDto.from(tutor)
 
@@ -63,19 +63,19 @@ class UserService(
 
     fun updateTutorById(tutorId: Long, request: UpdateTutorRequestDto):TutorResponseDto{
 
-        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("Tutor", tutorId)
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
 
         //todo : null이면 예외 던지기
 
         //todo : 토큰에서 user가져오기
         //todo : 본인이 아니면 throw IllegalAccessException
 
+        tutor.apply{
+            nickname = request.nickname,
+            description = request.description,
+            career = request.career
 
-        val (nickname, description, career) = request
-
-        tutor.nickname = nickname
-        tutor.description = description
-        tutor.career = career
+        }
 
         return TutorResponseDto.from(tutor)
 
@@ -83,7 +83,7 @@ class UserService(
 
     fun deleteTutorById(tutorId: Long){
 
-        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("Tutor", tutorId)
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
         //todo : null이면 예외 던지기
 
         //todo : 토큰에서 user가져오기
@@ -94,7 +94,7 @@ class UserService(
 
     //todo
     fun followStudentAndUser(tutorId: Long): FollowResponseDto {
-        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("Tutor", tutorId)
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
 
         //todo : follow 요청한 Userid 토큰에서 가져오기
 
@@ -102,7 +102,7 @@ class UserService(
     }
 
     fun unfollowStudentAndUser(tutorId:Long){
-        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("Tutor", tutorId)
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
 
         //todo : unfollow 요청한 Userid 토큰에서 가져오기
 

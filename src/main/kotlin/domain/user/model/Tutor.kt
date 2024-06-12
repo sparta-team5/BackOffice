@@ -13,13 +13,13 @@ class Tutor(
     @Column(name="email", nullable=false)
     val email:String,
 
-    @Column(name="password", nullable=true) //todo: nullable?
-    val password:String,
+    @Column(name="password", nullable=false)
+    var password:String,
 
-    @Column(name="description", nullable=true)
+    @Column(name="description", nullable=false)
     var description:String,
 
-    @Column(name="career", nullable=true)
+    @Column(name="career", nullable=false)
     var career:String,
 
     @Column(name="prev_passwords", nullable=true)
