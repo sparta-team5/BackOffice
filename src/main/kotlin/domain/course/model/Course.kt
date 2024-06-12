@@ -1,7 +1,6 @@
 package domain.course.model
 
 import domain.course.dto.CourseListResponse
-import domain.course.dto.CourseRequest
 import domain.course.dto.CourseResponse
 import domain.course.dto.CourseSimpleResponse
 import jakarta.persistence.*
@@ -81,5 +80,6 @@ fun Course.toSimpleResponse() : CourseSimpleResponse {
         description = description,
         category = category,
         imageUrl = imageUrl,
+        rate = rate
     )
 }
