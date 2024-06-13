@@ -3,9 +3,9 @@ package team5.backoffice.domain.course.service
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team5.backoffice.domain.auth.dto.GetUserInfoRequest
 import team5.backoffice.domain.auth.tutor.service.TutorService
 import team5.backoffice.domain.course.dto.*
 import team5.backoffice.domain.course.model.*
@@ -13,7 +13,6 @@ import team5.backoffice.domain.course.repository.BookmarkRepository
 import team5.backoffice.domain.course.repository.CategoryRepository
 import team5.backoffice.domain.course.repository.CourseRepository
 import team5.backoffice.domain.course.repository.SubscriptionRepository
-import team5.backoffice.domain.user.model.Tutor
 import team5.backoffice.domain.user.repository.StudentRepository
 import team5.backoffice.domain.user.repository.TutorRepository
 
@@ -55,7 +54,7 @@ class CourseService(
 //        return CursorPageResponse(pageResponse, nextCursor)
 //    }
 
-
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     fun createCourse(request: CourseRequest): CourseSimpleResponse {
         val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
         val tutor = tutorRepository.findByIdOrNull(request.tutorId) ?: throw RuntimeException("Tid not found")
@@ -71,6 +70,7 @@ class CourseService(
         ).let { CourseSimpleResponse.from(it) }
     }
 
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     @Transactional
     fun updateCourseById(courseId: Long, request: CourseRequest): CourseSimpleResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
@@ -85,6 +85,7 @@ class CourseService(
         return CourseSimpleResponse.from(course)
     }
 
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     fun deleteCourseById(courseId: Long) {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
         courseRepository.delete(course)
@@ -132,12 +133,5 @@ class CourseService(
         }
         else courseSlice.content.map { CourseListResponse.from(it, isBookmarked = false, isSubscribed = false) }
 
-    }
-
-
-    fun checkValidate(token: String): Tutor {
-        return tutorService.getTutorInfo(
-            GetUserInfoRequest(token = token)
-        )
     }
 }

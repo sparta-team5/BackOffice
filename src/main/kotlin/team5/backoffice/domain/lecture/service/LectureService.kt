@@ -2,6 +2,7 @@ package team5.backoffice.domain.lecture.service
 
 import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import team5.backoffice.domain.course.repository.CourseRepository
 import team5.backoffice.domain.lecture.dto.CreateLectureRequest
@@ -21,6 +22,7 @@ class LectureService(
         return LectureResponse.from(lecture)
     }
 
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     fun addLecture(courseId: Long, request: CreateLectureRequest): LectureResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
         // TODO( 요청한 사람이 course 주인인지 확인하기)
@@ -32,6 +34,7 @@ class LectureService(
             .let { LectureResponse.from(it) }
     }
 
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     @Transactional
     fun updateLecture(courseId: Long, lectureId: Long, request: UpdateLectureRequest): LectureResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
@@ -45,6 +48,7 @@ class LectureService(
 
     }
 
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     fun deleteLecture(courseId: Long, lectureId: Long): Unit {
         // TODO( 요청한 사람이 course 주인인지 확인하기)
         val lecture = lectureRepository.findByIdAndCourseId(lectureId, courseId) ?: throw RuntimeException()

@@ -1,6 +1,7 @@
 package team5.backoffice.domain.review.service
 
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import team5.backoffice.domain.course.repository.CourseRepository
 import team5.backoffice.domain.review.dto.ReviewRequest
@@ -18,6 +19,7 @@ class ReviewService(
     private val studentRepository: StudentRepository,
 ) {
 
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     fun addReview(courseId: Long, request: ReviewRequest): ReviewResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("course not found")
         val student = studentRepository.findByIdOrNull(request.studentId) ?: throw RuntimeException("student not found")
@@ -30,6 +32,7 @@ class ReviewService(
             .let { ReviewResponse.from(it) }
     }
 
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     fun updateReview(courseId: Long, reviewId: Long, request: ReviewRequest): ReviewResponse {
         val review =
             reviewRepository.findByIdAndCourseId(reviewId, courseId) ?: throw RuntimeException("review not found")
@@ -42,6 +45,7 @@ class ReviewService(
         return ReviewResponse.from(review)
     }
 
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     fun deleteReview(courseId: Long, reviewId: Long): Unit {
         val review =
             reviewRepository.findByIdAndCourseId(reviewId, courseId) ?: throw RuntimeException("review not found")
