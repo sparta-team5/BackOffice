@@ -3,7 +3,7 @@ package domain.course.dto
 import domain.course.model.Course
 
 data class CourseListResponse(
-    val courseId: Long?,
+    val id: Long,
     val title: String,
     val tutor: String,
     val description: String,
@@ -16,7 +16,7 @@ data class CourseListResponse(
 ) {
     companion object {
         fun from(course: Course, isBookmarked: Boolean, isSubscribed: Boolean) = CourseListResponse(
-            courseId = course.id,
+            id = course.id!!,
             title = course.title,
             tutor = course.tutor.name,
             category = course.category,
