@@ -1,8 +1,7 @@
 package domain.review.controller
 
-import domain.review.dto.AddReviewRequest
+import domain.review.dto.ReviewRequest
 import domain.review.dto.ReviewResponse
-import domain.review.dto.UpdateReviewRequest
 import domain.review.service.ReviewService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -23,12 +22,12 @@ class ReviewController(
     @PostMapping
     fun addReview(
         @PathVariable("courseId") courseId: Long,
-        @RequestBody addReviewRequest: AddReviewRequest
+        @RequestBody request: ReviewRequest
     ): ResponseEntity<ReviewResponse> {
         return ResponseEntity.status(
             HttpStatus.CREATED
         ).body(
-            reviewService.addReview(courseId, addReviewRequest)
+            reviewService.addReview(courseId, request)
         )
     }
 
@@ -36,9 +35,9 @@ class ReviewController(
     fun updateReview(
         @PathVariable("courseId") courseId: Long,
         @PathVariable("reviewId") reviewId: Long,
-        @RequestBody updateReviewRequest: UpdateReviewRequest
+        @RequestBody request: ReviewRequest
     ): ResponseEntity<ReviewResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(reviewService.updateReview(courseId, reviewId, updateReviewRequest))
+        return ResponseEntity.status(HttpStatus.OK).body(reviewService.updateReview(courseId, reviewId, request))
     }
 
     @DeleteMapping("/{reviewId}")

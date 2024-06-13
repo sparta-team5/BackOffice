@@ -1,6 +1,6 @@
 package domain.review.dto
 
-data class AddReviewRequest(
+data class ReviewRequest(
     val body: String,
     val rate: Int,
 )
