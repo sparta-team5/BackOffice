@@ -2,33 +2,30 @@ package domain.course.dto
 
 import domain.course.model.Course
 
-
-data class CourseResponse(
+data class CourseListResponse(
     val id: Long,
     val title: String,
     val tutor: String,
-    val category: String,
     val description: String,
-    val lectures: List<Lecture>,
-    val reviews: List<Leview>,
-    val isBookMarked: Boolean = false,
+    val imageUrl: String,
+    val category: String,
+    val isBookmarked: Boolean = false,
     val isSubscribed: Boolean = false,
     val viewCount: Long,
     val rate: Double
 ) {
     companion object {
-        fun from(course: Course, isBookMarked: Boolean, isSubscribed: Boolean) = CourseResponse(
+        fun from(course: Course, isBookmarked: Boolean, isSubscribed: Boolean) = CourseListResponse(
             id = course.id!!,
             title = course.title,
             tutor = course.tutor.name,
             category = course.category,
             description = course.description,
-            isBookMarked = isBookMarked,
-            isSubscribed = isSubscribed,
-            lectures = course.lectures, //toResponse?
-            reviews = course.reviews, //toResponse?
+            imageUrl = course.imageUrl,
             viewCount = course.viewCount,
-            rate = course.rate
+            rate = course.rate,
+            isBookmarked = isBookmarked,
+            isSubscribed = isSubscribed
         )
     }
 }
