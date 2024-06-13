@@ -1,14 +1,14 @@
 package team5.backoffice.domain.lecture.service
 
+import jakarta.transaction.Transactional
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Service
 import team5.backoffice.domain.course.repository.CourseRepository
 import team5.backoffice.domain.lecture.dto.CreateLectureRequest
 import team5.backoffice.domain.lecture.dto.LectureResponse
 import team5.backoffice.domain.lecture.dto.UpdateLectureRequest
 import team5.backoffice.domain.lecture.model.Lecture
 import team5.backoffice.domain.lecture.repository.LectureRepository
-import jakarta.transaction.Transactional
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.stereotype.Service
 
 @Service
 class LectureService(
@@ -49,6 +49,12 @@ class LectureService(
         // TODO( 요청한 사람이 course 주인인지 확인하기)
         val lecture = lectureRepository.findByIdAndCourseId(lectureId, courseId) ?: throw RuntimeException()
         lectureRepository.delete(lecture)
+    }
+
+    fun getAllLecture(courseId: Long): List<LectureResponse> {
+        courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
+        return lectureRepository.findAllByCourseId(courseId)
+            .map { LectureResponse.from(it) }
     }
 
 }
