@@ -1,31 +1,33 @@
 package team5.backoffice.domain.auth.tutor.service
 
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import team5.backoffice.domain.auth.dto.ChangePasswordRequest
 import team5.backoffice.domain.auth.dto.GetUserInfoRequest
 import team5.backoffice.domain.auth.dto.LoginRequest
 import team5.backoffice.domain.auth.dto.SignUpRequest
-import team5.backoffice.domain.auth.jwt.BCHash
-import team5.backoffice.domain.auth.jwt.JwtPlugin
 import team5.backoffice.domain.user.dto.TutorResponse
 import team5.backoffice.domain.user.model.Tutor
 import team5.backoffice.domain.user.repository.TutorRepository
+import team5.backoffice.infra.security.jwt.JwtPlugin
 import javax.naming.AuthenticationException
 
 @Service
 class TutorService(
     private val tutorRepository: TutorRepository,
     private val jwtPlugin: JwtPlugin,
-    private val encoder: BCHash,
+    private val passwordEncoder: PasswordEncoder,
 ) {
     fun getTutorInfo(request: GetUserInfoRequest): Tutor {
         return validateTutorLoginEmailFromToken(request.token)
     }
 
     private fun validateTutorLoginEmailFromToken(token: String): Tutor {
-        return jwtPlugin.validateToken(token).let {
-            tutorRepository.findByEmail(it)
-        }
+        return jwtPlugin.validateToken(token).getOrNull()?.let {
+            val email = it.body["email"] as String
+            tutorRepository.findByEmail(email)
+        } ?: throw AuthenticationException("Invalid token")
     }
 
     fun signUpTutor(signUpRequest: SignUpRequest): TutorResponse {
@@ -35,7 +37,7 @@ class TutorService(
         val tutor = Tutor(
             nickname = signUpRequest.nickname,
             email = signUpRequest.email,
-            password = encoder.hashPassword(signUpRequest.password),
+            password = passwordEncoder.encode(signUpRequest.password),
             description = "",
             career = "",
 //            prevPasswords = mutableListOf()
@@ -47,20 +49,20 @@ class TutorService(
     fun loginTutor(loginRequest: LoginRequest): String {
         val token = tutorRepository.findByEmail(loginRequest.email)
             .let { tutor ->
-                if (encoder.verifyPassword(loginRequest.password, tutor.password)) {
-                    jwtPlugin.generateAccessToken("email", tutor.email)
+                if (passwordEncoder.matches(loginRequest.password, tutor.password)) {
+                    jwtPlugin.generateAccessToken("email", tutor.email, "email")
                 } else throw AuthenticationException("Password is incorrect")
             }
         return token
     }
 
-    //단순 변경(이전 비밀번호 조회 X)
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     fun changeTutorPassword(request: ChangePasswordRequest): Boolean {
         validateTutorLoginEmailFromToken(request.user.token)
             .let {
-                if (encoder.verifyPassword(request.password, it.password)) {
-                    if (!encoder.verifyPassword(request.newPassword, it.password)) {
-                        it.password = encoder.hashPassword(request.newPassword)
+                if (passwordEncoder.matches(request.password, it.password)) {
+                    if (passwordEncoder.matches(request.newPassword, it.password)) {
+                        it.password = passwordEncoder.encode(request.newPassword)
                     } else throw AuthenticationException("Password not changed")
                 } else throw AuthenticationException("Password is incorrect")
             }
