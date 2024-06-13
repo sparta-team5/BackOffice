@@ -1,8 +1,8 @@
 package domain.user.controller
 
 import domain.review.service.ReviewService
-import domain.user.dto.TutorResponseDto
-import domain.user.dto.UpdateTutorRequestDto
+import domain.user.dto.TutorResponse
+import domain.user.dto.UpdateTutorRequest
 import domain.user.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -26,7 +26,7 @@ class TutorController(
 //    }
 
     @GetMapping("/{tutorId}")
-    fun getTutorDetail(@PathVariable tutorId: Long): ResponseEntity<TutorResponseDto> {
+    fun getTutorDetail(@PathVariable tutorId: Long): ResponseEntity<TutorResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getTutorById(tutorId))
@@ -35,8 +35,8 @@ class TutorController(
     @PutMapping("/{tutorId}")
     fun updateTutor(
         @PathVariable tutorId: Long,
-        @RequestBody updateTutorRequest: UpdateTutorRequestDto
-    ): ResponseEntity<TutorResponseDto> {
+        @RequestBody updateTutorRequest: UpdateTutorRequest
+    ): ResponseEntity<TutorResponse> {
 
         return ResponseEntity
             .status(HttpStatus.OK)

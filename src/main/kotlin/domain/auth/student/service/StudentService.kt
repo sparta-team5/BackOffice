@@ -6,7 +6,7 @@ import domain.auth.dto.LoginRequest
 import domain.auth.dto.SignUpRequest
 import domain.auth.jwt.BCHash
 import domain.auth.jwt.JwtPlugin
-import domain.user.dto.StudentResponseDto
+import domain.user.dto.StudentResponse
 import domain.user.model.Student
 import domain.user.repository.StudentRepository
 import org.springframework.stereotype.Service
@@ -28,7 +28,7 @@ class StudentService(
         }
     }
 
-    fun signUpStudent(signUpRequest: SignUpRequest): StudentResponseDto {
+    fun signUpStudent(signUpRequest: SignUpRequest): StudentResponse {
         if (studentRepository.existByEmail(signUpRequest.email)) {
             throw Exception("이미 존재하는 회원")
         }
@@ -41,7 +41,7 @@ class StudentService(
             prevPasswords = null.toString()
         )
         studentRepository.save(student)
-        return StudentResponseDto.from(student)
+        return StudentResponse.from(student)
     }
 
     fun loginStudent(loginRequest: LoginRequest): String {

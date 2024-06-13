@@ -4,7 +4,7 @@ import domain.auth.dto.ChangePasswordRequest
 import domain.auth.dto.LoginRequest
 import domain.auth.dto.SignUpRequest
 import domain.auth.student.service.StudentService
-import domain.user.dto.StudentResponseDto
+import domain.user.dto.StudentResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -18,7 +18,7 @@ class StudentAuthController(
     @PostMapping("/signup")
     fun signUpStudent(
         @RequestBody signUpRequest: SignUpRequest
-    ): ResponseEntity<StudentResponseDto> {
+    ): ResponseEntity<StudentResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(studentService.signUpStudent(signUpRequest))

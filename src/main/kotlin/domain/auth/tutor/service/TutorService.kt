@@ -6,7 +6,7 @@ import domain.auth.dto.LoginRequest
 import domain.auth.dto.SignUpRequest
 import domain.auth.jwt.BCHash
 import domain.auth.jwt.JwtPlugin
-import domain.user.dto.TutorResponseDto
+import domain.user.dto.TutorResponse
 import domain.user.model.Tutor
 import domain.user.repository.TutorRepository
 import org.springframework.stereotype.Service
@@ -28,7 +28,7 @@ class TutorService(
         }
     }
 
-    fun signUpTutor(signUpRequest: SignUpRequest): TutorResponseDto {
+    fun signUpTutor(signUpRequest: SignUpRequest): TutorResponse {
         if (tutorRepository.existByEmail(signUpRequest.email)) {
             throw Exception("이미 존재하는 회원")
         }
@@ -41,7 +41,7 @@ class TutorService(
             prevPasswords = null.toString()
         )
         tutorRepository.save(tutor)
-        return TutorResponseDto.from(tutor)
+        return TutorResponse.from(tutor)
     }
 
     fun loginTutor(loginRequest: LoginRequest): String {

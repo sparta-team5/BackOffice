@@ -14,15 +14,15 @@ class UserService(
 ) {
 
 
-    fun getStudentById(studentId: Long): StudentResponseDto {
+    fun getStudentById(studentId: Long): StudentResponse {
         val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")
 
-        return StudentResponseDto.from(student)
+        return StudentResponse.from(student)
     }
 
 
     @Transactional
-    fun updateStudentById(studentId: Long, request: UpdateStudentRequestDto): StudentResponseDto {
+    fun updateStudentById(studentId: Long, request: UpdateStudentRequest): StudentResponse {
 
         val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")
         //todo : null이면 예외 던지기
@@ -32,7 +32,7 @@ class UserService(
 
 
         val nickname = request.nickname
-        return StudentResponseDto.from(student)
+        return StudentResponse.from(student)
 
     }
 
@@ -52,15 +52,15 @@ class UserService(
 //
 //    }
 
-    fun getTutorById(tutorId: Long): TutorResponseDto {
+    fun getTutorById(tutorId: Long): TutorResponse {
 
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
 
-        return TutorResponseDto.from(tutor)
+        return TutorResponse.from(tutor)
 
     }
 
-    fun updateTutorById(tutorId: Long, request: UpdateTutorRequestDto): TutorResponseDto {
+    fun updateTutorById(tutorId: Long, request: UpdateTutorRequest): TutorResponse {
 
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
 
@@ -76,7 +76,7 @@ class UserService(
 
         }
 
-        return TutorResponseDto.from(tutor)
+        return TutorResponse.from(tutor)
 
     }
 
@@ -92,7 +92,7 @@ class UserService(
     }
 
     //todo
-    fun followStudentAndUser(tutorId: Long): FollowResponseDto {
+    fun followStudentAndUser(tutorId: Long): FollowResponse {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
 
         //todo : follow 요청한 Userid 토큰에서 가져오기

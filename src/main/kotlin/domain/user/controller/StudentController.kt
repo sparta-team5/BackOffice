@@ -1,7 +1,7 @@
 package domain.user.controller
 
-import domain.user.dto.StudentResponseDto
-import domain.user.dto.UpdateStudentRequestDto
+import domain.user.dto.StudentResponse
+import domain.user.dto.UpdateStudentRequest
 import domain.user.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,7 +14,7 @@ class StudentController(
 ) {
 
     @GetMapping()
-    fun getStudent(@PathVariable studentId: Long): ResponseEntity<StudentResponseDto> {
+    fun getStudent(@PathVariable studentId: Long): ResponseEntity<StudentResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.getStudentById(studentId))
@@ -23,8 +23,8 @@ class StudentController(
     @PutMapping()
     fun updateStudent(
         @PathVariable studentId: Long,
-        @RequestBody updateStudentRequest: UpdateStudentRequestDto
-    ): ResponseEntity<StudentResponseDto> {
+        @RequestBody updateStudentRequest: UpdateStudentRequest
+    ): ResponseEntity<StudentResponse> {
 
         return ResponseEntity
             .status(HttpStatus.OK)
