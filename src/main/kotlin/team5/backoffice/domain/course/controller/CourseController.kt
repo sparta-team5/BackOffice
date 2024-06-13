@@ -1,11 +1,10 @@
 package team5.backoffice.domain.course.controller
 
-import team5.backoffice.domain.auth.dto.GetUserInfoRequest
-import team5.backoffice.domain.course.service.CourseService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import team5.backoffice.domain.course.dto.*
+import team5.backoffice.domain.course.service.CourseService
 
 @RestController
 @RequestMapping("/courses")
@@ -46,37 +45,31 @@ class CourseController(
 
     @PostMapping()
     fun createCourse(
-        @RequestBody request: CourseRequest,
-        @RequestBody tutorInfo: GetUserInfoRequest
+        @RequestBody request: CourseRequest
     ): ResponseEntity<CourseSimpleResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(courseService.createCourse(request, tutorInfo))
+            .body(courseService.createCourse(request))
     }
 
     @PutMapping("/{courseId}")
     fun updateCourse(
         @PathVariable courseId: Long,
-        @RequestBody request: CourseRequest,
-        @RequestBody tutorInfo: GetUserInfoRequest
+        @RequestBody request: CourseRequest
     ): ResponseEntity<CourseSimpleResponse> {
-        return courseService.checkValidate(tutorInfo.token).let {
-            ResponseEntity
-                .status(HttpStatus.OK)
-                .body(courseService.updateCourseById(courseId, request))
-        }
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(courseService.updateCourseById(courseId, request))
+
     }
 
     @DeleteMapping("/{courseId}")
     fun deleteCourse(
-        @PathVariable courseId: Long,
-        @RequestBody tutorInfo: GetUserInfoRequest
+        @PathVariable courseId: Long
     ): ResponseEntity<Unit> {
-        return courseService.checkValidate(tutorInfo.token).let {
-            ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .body(courseService.deleteCourseById(courseId))
-        }
+        return ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .body(courseService.deleteCourseById(courseId))
     }
 
     @PostMapping("/{courseId}/bookmark")
@@ -86,7 +79,7 @@ class CourseController(
         // studentId =
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(courseService.addBookmark(courseId, 1L))//TODO(need to be changed after security implemented)
+            .body(courseService.addBookmark(courseId, 4L))//TODO(need to be changed after security implemented)
     }
 
     // 북마크에 중복에 관한 로직은 프론트엔드가 나만 아니면 돼
@@ -97,7 +90,7 @@ class CourseController(
         //studentId =
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
-            .body(courseService.removeBookmark(courseId, 1L)) //TODO(need to be changed after security implemented)
+            .body(courseService.removeBookmark(courseId, 4L)) //TODO(need to be changed after security implemented)
     }
 
     @PostMapping("/{courseId}/subscription")
@@ -107,6 +100,6 @@ class CourseController(
         // 중복결제 방지를 위한 id 찾아오기 studentId = content.subject
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.subscribe(courseId, 1L)) // TODO(need to be changed after security implemented)
+            .body(courseService.subscribe(courseId, 4L)) // TODO(need to be changed after security implemented)
     }
 }

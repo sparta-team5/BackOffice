@@ -5,11 +5,12 @@ import jakarta.persistence.Embeddable
 import java.io.Serializable
 
 @Embeddable
-data class BookmarkId( //for 복합키 사용
+data class BookmarkId(
+
+    @Column(name = "course_id")
+    val courseId: Long,
+
     @Column(name = "student_id")
     val studentId: Long,
 
-    @Column(name = "course_id")
-    val courseId: Long
-
-) : Serializable
+    ) : Serializable

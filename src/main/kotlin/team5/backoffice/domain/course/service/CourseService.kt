@@ -1,20 +1,21 @@
 package team5.backoffice.domain.course.service
 
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Slice
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import team5.backoffice.domain.auth.dto.GetUserInfoRequest
 import team5.backoffice.domain.auth.tutor.service.TutorService
+import team5.backoffice.domain.course.dto.*
+import team5.backoffice.domain.course.model.*
 import team5.backoffice.domain.course.repository.BookmarkRepository
 import team5.backoffice.domain.course.repository.CategoryRepository
 import team5.backoffice.domain.course.repository.CourseRepository
 import team5.backoffice.domain.course.repository.SubscriptionRepository
 import team5.backoffice.domain.user.model.Tutor
 import team5.backoffice.domain.user.repository.StudentRepository
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Slice
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-import team5.backoffice.domain.course.dto.*
-import team5.backoffice.domain.course.model.*
+import team5.backoffice.domain.user.repository.TutorRepository
 
 @Service
 class CourseService(
@@ -24,6 +25,7 @@ class CourseService(
     private val subscriptionRepository: SubscriptionRepository,
     private val bookmarkRepository: BookmarkRepository,
     private val categoryRepository: CategoryRepository,
+    private val tutorRepository: TutorRepository,
 ) {
 
     fun getAllCourses(cursor: CursorRequest, studentId: Long?): CursorPageResponse {
@@ -54,12 +56,13 @@ class CourseService(
 //    }
 
 
-    fun createCourse(request: CourseRequest, tutorInfo: GetUserInfoRequest): CourseSimpleResponse {
+    fun createCourse(request: CourseRequest): CourseSimpleResponse {
         val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
+        val tutor = tutorRepository.findByIdOrNull(request.tutorId) ?: throw RuntimeException("Tid not found")
         return courseRepository.save(
             Course(
                 title = request.title,
-                tutor = tutorService.getTutorInfo(tutorInfo),
+                tutor = tutor,
                 description = request.description,
                 category = category,
                 imageUrl = request.imageUrl,
@@ -72,6 +75,7 @@ class CourseService(
     fun updateCourseById(courseId: Long, request: CourseRequest): CourseSimpleResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
         val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
+        if (course.tutor.id != request.tutorId) throw RuntimeException("Unauthorized tutor")
         course.apply {
             this.title = request.title
             this.description = request.description
@@ -89,7 +93,7 @@ class CourseService(
     fun addBookmark(courseId: Long, studentId: Long) {
         courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
         studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student not found")
-        if (isBookmarkExists(courseId, studentId)) {
+        if (!isBookmarkExists(courseId, studentId)) {
             bookmarkRepository.save(Bookmark(BookmarkId(courseId, studentId)))
         }
     }
@@ -105,7 +109,7 @@ class CourseService(
     fun subscribe(courseId: Long, studentId: Long) {
         courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
         studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student not found")
-        if (isSubscribeExists(courseId, studentId)) {
+        if (!isSubscribeExists(courseId, studentId)) {
             subscriptionRepository.save(Subscription(SubscriptionId(courseId, studentId)))
         }
     }

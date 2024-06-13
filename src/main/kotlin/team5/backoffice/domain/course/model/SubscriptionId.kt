@@ -5,11 +5,12 @@ import jakarta.persistence.Embeddable
 import java.io.Serializable
 
 @Embeddable
-data class SubscriptionId( //for 복합키 사용
-    @Column(name = "student_id")
-    val studentId: Long,
-
+data class SubscriptionId(
+    
     @Column(name = "course_id")
-    val courseId: Long
+    val courseId: Long,
+
+    @Column(name = "student_id")
+    val studentId: Long
 
 ) : Serializable
