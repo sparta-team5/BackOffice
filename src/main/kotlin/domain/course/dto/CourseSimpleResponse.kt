@@ -8,7 +8,6 @@ data class CourseSimpleResponse(
     val description: String,
     val imageUrl: String,
     val category: String,
-    val rate: Double,
 ) {
     companion object {
         fun from(course: Course) = CourseSimpleResponse(
@@ -17,7 +16,6 @@ data class CourseSimpleResponse(
             description = course.description,
             category = course.category,
             imageUrl = course.imageUrl,
-            rate = course.rate
         )
     }
 }

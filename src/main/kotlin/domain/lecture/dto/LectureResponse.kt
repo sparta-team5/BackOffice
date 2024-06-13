@@ -7,11 +7,11 @@ data class LectureResponse(
     val courseId: Long,
     val title: String,
     val videoUrl: String,
-){
+) {
     companion object {
         fun from(lecture: Lecture) = LectureResponse(
             id = lecture.id!!,
-            courseId = lecture.courseId,
+            courseId = lecture.course.id!!,
             title = lecture.title,
             videoUrl = lecture.videoUrl
         )

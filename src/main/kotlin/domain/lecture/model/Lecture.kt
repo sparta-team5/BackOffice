@@ -1,5 +1,6 @@
 package domain.lecture.model
 
+import domain.course.model.Course
 import jakarta.persistence.*
 
 @Entity
@@ -11,8 +12,9 @@ class Lecture(
     @Column(name = "video_url")
     var videoUrl: String,
 
-    @Column(name = "course_id")
-    var courseId: Long,
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    var course: Course,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

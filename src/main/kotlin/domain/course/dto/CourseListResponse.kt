@@ -11,19 +11,17 @@ data class CourseListResponse(
     val category: String,
     val isBookmarked: Boolean = false,
     val isSubscribed: Boolean = false,
-    val viewCount: Long,
-    val rate: Double
+    val viewCount: Long
 ) {
     companion object {
         fun from(course: Course, isBookmarked: Boolean, isSubscribed: Boolean) = CourseListResponse(
             id = course.id!!,
             title = course.title,
-            tutor = course.tutor.name,
+            tutor = course.tutor.nickname,
             category = course.category,
             description = course.description,
             imageUrl = course.imageUrl,
             viewCount = course.viewCount,
-            rate = course.rate,
             isBookmarked = isBookmarked,
             isSubscribed = isSubscribed
         )

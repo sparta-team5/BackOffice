@@ -1,16 +1,21 @@
 package domain.review.model
 
+import domain.course.model.Course
+import domain.user.model.Student
 import jakarta.persistence.*
 
 
 @Entity
 @Table(name = "review")
 class Review(
-    @Column(name = "student_id")
-    val studentId: Long,
 
-    @Column(name = "course_id")
-    val courseId: Long,
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    val student: Student,
+
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    val course: Course,
 
     @Column(name = "body")
     var body: String,
