@@ -21,9 +21,10 @@ class Tutor(
 
     @Column(name = "career", nullable = false)
     var career: String,
-
-    @Column(name = "prev_passwords", nullable = true)
-    val prevPasswords: String,
+//
+//    @Column(name = "prev_passwords", nullable = true)
+//    @ElementCollection(targetClass = String::class)
+//    val prevPasswords: MutableList<String> = mutableListOf(),
 ) {
 
     @Id

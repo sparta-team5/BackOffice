@@ -1,11 +1,11 @@
 package team5.backoffice.domain.user.service
 
-import team5.backoffice.domain.user.repository.StudentRepository
-import team5.backoffice.domain.user.repository.TutorRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team5.backoffice.domain.user.dto.*
+import team5.backoffice.domain.user.repository.StudentRepository
+import team5.backoffice.domain.user.repository.TutorRepository
 
 @Service
 class UserService(
@@ -24,8 +24,10 @@ class UserService(
         //todo : null이면 예외 던지기
         //todo : user가져오기
         //todo : 본인이 아니면 throw IllegalAccessException
-        val nickname = request.nickname
-        return StudentResponse.from(student)
+        student.apply {
+            this.nickname = request.nickname
+        }
+        return studentRepository.save(student).let { StudentResponse.from(student) }
     }
 
     fun deleteStudentById(studentId: Long) {
@@ -55,9 +57,8 @@ class UserService(
             nickname = request.nickname
             description = request.description
             career = request.career
-
         }
-        return TutorResponse.from(tutor)
+        return tutorRepository.save(tutor).let { TutorResponse.from(tutor) }
     }
 
     fun deleteTutorById(tutorId: Long) {

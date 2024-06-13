@@ -7,7 +7,7 @@ import jakarta.persistence.*
 class Student(
 
     @Column(name = "nickname", nullable = false)
-    val nickname: String,
+    var nickname: String,
 
     @Column(name = "email", nullable = false)
     val email: String,
@@ -21,8 +21,9 @@ class Student(
     @Column(name = "provider_id", nullable = true)
     val providerId: String? = null,
 
-    @Column(name = "prev_passwords", nullable = true)
-    val prevPasswords: String? = null,
+//    @Column(name = "prev_passwords", nullable = true)
+//    @ElementCollection(fetch = FetchType.LAZY)
+//    val prevPasswords: MutableList<String> = mutableListOf(),
 ) {
 
     @Id

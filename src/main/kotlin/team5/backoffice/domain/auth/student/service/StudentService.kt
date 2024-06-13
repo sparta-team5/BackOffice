@@ -36,9 +36,9 @@ class StudentService(
             nickname = signUpRequest.nickname,
             email = signUpRequest.email,
             password = encoder.hashPassword(signUpRequest.password),
-            providerName = null.toString(),
-            providerId = null.toString(),
-            prevPasswords = null.toString()
+            providerName = "",
+            providerId = "",
+//            prevPasswords = mutableListOf()
         )
         studentRepository.save(student)
         return StudentResponse.from(student)

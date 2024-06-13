@@ -36,9 +36,9 @@ class TutorService(
             nickname = signUpRequest.nickname,
             email = signUpRequest.email,
             password = encoder.hashPassword(signUpRequest.password),
-            description = null.toString(),
-            career = null.toString(),
-            prevPasswords = null.toString()
+            description = "",
+            career = "",
+//            prevPasswords = mutableListOf()
         )
         tutorRepository.save(tutor)
         return TutorResponse.from(tutor)
