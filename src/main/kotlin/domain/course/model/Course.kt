@@ -1,8 +1,8 @@
 package domain.course.model
 
-import domain.course.dto.CourseListResponse
-import domain.course.dto.CourseResponse
-import domain.course.dto.CourseSimpleResponse
+import domain.lecture.model.Lecture
+import domain.review.model.Review
+import domain.user.model.Tutor
 import jakarta.persistence.*
 import java.time.LocalDateTime
 
