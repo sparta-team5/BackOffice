@@ -49,11 +49,9 @@ class CourseController(
         @RequestBody request: CourseRequest,
         @RequestBody tutorInfo: GetUserInfoRequest
     ): ResponseEntity<CourseSimpleResponse> {
-        return courseService.checkValidate(tutorInfo.token).let {
-            ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(courseService.createCourse(request, tutorInfo))
-        }
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(courseService.createCourse(request, tutorInfo))
     }
 
     @PutMapping("/{courseId}")
