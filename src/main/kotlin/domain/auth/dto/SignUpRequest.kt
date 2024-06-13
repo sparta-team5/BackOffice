@@ -1,7 +1,7 @@
 package domain.auth.dto
 
 data class SignUpRequest(
-    val name: String,
+    val nickname: String,
     val email: String,
     val password: String,
 )

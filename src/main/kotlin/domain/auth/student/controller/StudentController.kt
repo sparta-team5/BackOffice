@@ -15,7 +15,7 @@ class StudentController(
     private val studentService: StudentService
 ) {
 
-    @GetMapping("/signup")
+    @PostMapping("/signup")
     fun signUpStudent(
         @RequestBody signUpRequest: SignUpRequest
     ): ResponseEntity<StudentResponseDto> {
@@ -24,7 +24,7 @@ class StudentController(
             .body(studentService.signUpStudent(signUpRequest))
     }
 
-    @GetMapping("/login/student")
+    @PostMapping("/login/student")
     fun loginStudent(
         @RequestBody loginRequest: LoginRequest
     ): ResponseEntity<String> {
@@ -38,7 +38,7 @@ class StudentController(
         @RequestBody changePasswordRequest: ChangePasswordRequest
     ): ResponseEntity<Boolean> {
         return ResponseEntity
-            .status(HttpStatus.CREATED)
+            .status(HttpStatus.OK)
             .body(studentService.changeStudentPassword(changePasswordRequest))
 
     }

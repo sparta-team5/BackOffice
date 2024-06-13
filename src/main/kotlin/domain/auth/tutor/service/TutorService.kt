@@ -33,7 +33,7 @@ class TutorService(
             throw Exception("이미 존재하는 회원")
         }
         val tutor = Tutor(
-            nickname = signUpRequest.name,
+            nickname = signUpRequest.nickname,
             email = signUpRequest.email,
             password = encoder.hashPassword(signUpRequest.password),
             description = null.toString(),

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*
 class TutorController(
     private val tutorService: TutorService
 ) {
-    @GetMapping("/signup")
+    @PostMapping("/signup")
     fun signUpTutor(
         @RequestBody signUpRequest: SignUpRequest
     ): ResponseEntity<TutorResponseDto> {
@@ -23,7 +23,7 @@ class TutorController(
             .body(tutorService.signUpTutor(signUpRequest))
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     fun loginTutor(
         @RequestBody loginRequest: LoginRequest
     ): ResponseEntity<String> {
@@ -37,7 +37,7 @@ class TutorController(
         @RequestBody changePasswordRequest: ChangePasswordRequest
     ): ResponseEntity<Boolean> {
         return ResponseEntity
-            .status(HttpStatus.CREATED)
+            .status(HttpStatus.OK)
             .body(tutorService.changeTutorPassword(changePasswordRequest))
 
     }
