@@ -25,7 +25,6 @@ class StudentController(
         @PathVariable studentId: Long,
         @RequestBody updateStudentRequest: UpdateStudentRequest
     ): ResponseEntity<StudentResponse> {
-
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.updateStudentById(studentId, updateStudentRequest))
@@ -33,7 +32,6 @@ class StudentController(
 
     @DeleteMapping()
     fun deleteStudent(@PathVariable studentId: Long): ResponseEntity<Unit> {
-
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
             .body(userService.deleteStudentById(studentId))

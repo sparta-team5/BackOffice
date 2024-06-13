@@ -1,5 +1,6 @@
 package domain.user.controller
 
+import domain.review.dto.ReviewResponse
 import domain.review.service.ReviewService
 import domain.user.dto.TutorResponse
 import domain.user.dto.UpdateTutorRequest
@@ -37,7 +38,6 @@ class TutorController(
         @PathVariable tutorId: Long,
         @RequestBody updateTutorRequest: UpdateTutorRequest
     ): ResponseEntity<TutorResponse> {
-
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.updateTutorById(tutorId, updateTutorRequest))
@@ -45,7 +45,6 @@ class TutorController(
 
     @DeleteMapping("/{tutorId}")
     fun deleteTutor(@PathVariable tutorId: Long): ResponseEntity<Unit> {
-
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
             .body(userService.deleteTutorById(tutorId))
@@ -54,13 +53,13 @@ class TutorController(
 
     @GetMapping("/{tutorId}/reviews")
     fun getAllReviewsByTutor(@PathVariable tutorId: Long): ResponseEntity<List<ReviewResponse>> {
-
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(reviewService.getAllReviewsByTutor(tutorId))
     }
+}
 
-    //todo
+//todo
 //    @PostMapping("/{tutorId}/follow")
 //    fun followTutor(
 //        @PathVariable tutorId :Long,
