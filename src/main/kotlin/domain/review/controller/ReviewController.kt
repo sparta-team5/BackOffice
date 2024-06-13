@@ -16,7 +16,9 @@ class ReviewController(
     fun getReviewsByCourse(
         @PathVariable("courseId") courseId: Long
     ): ResponseEntity<List<ReviewResponse>> {
-        return ResponseEntity.status(HttpStatus.OK).body(reviewService.getAllReviewsByCourse(courseId))
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(reviewService.getAllReviewsByCourse(courseId))
     }
 
     @PostMapping
@@ -24,11 +26,9 @@ class ReviewController(
         @PathVariable("courseId") courseId: Long,
         @RequestBody request: ReviewRequest
     ): ResponseEntity<ReviewResponse> {
-        return ResponseEntity.status(
-            HttpStatus.CREATED
-        ).body(
-            reviewService.addReview(courseId, request)
-        )
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(reviewService.addReview(courseId, request))
     }
 
     @PutMapping("/{reviewId}")
@@ -37,7 +37,9 @@ class ReviewController(
         @PathVariable("reviewId") reviewId: Long,
         @RequestBody request: ReviewRequest
     ): ResponseEntity<ReviewResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(reviewService.updateReview(courseId, reviewId, request))
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(reviewService.updateReview(courseId, reviewId, request))
     }
 
     @DeleteMapping("/{reviewId}")
@@ -46,6 +48,8 @@ class ReviewController(
         @PathVariable("reviewId") reviewId: Long,
     ): ResponseEntity<Unit> {
         reviewService.deleteReview(courseId, reviewId)
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+        return ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .build()
     }
 }

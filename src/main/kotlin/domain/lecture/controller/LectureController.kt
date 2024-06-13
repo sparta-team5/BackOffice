@@ -19,7 +19,9 @@ class LectureController(
         @PathVariable courseId: Long,
         @PathVariable lectureId: Long,
     ): ResponseEntity<LectureResponse> {
-        return ResponseEntity.ok(lectureService.getLecture(courseId, lectureId))
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(lectureService.getLecture(courseId, lectureId))
     }
 
     @PostMapping
@@ -27,7 +29,9 @@ class LectureController(
         @PathVariable courseId: Long,
         @RequestBody createLectureRequest: CreateLectureRequest,
     ): ResponseEntity<LectureResponse> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(lectureService.addLecture(courseId, createLectureRequest))
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(lectureService.addLecture(courseId, createLectureRequest))
     }
 
     @PutMapping("/{lectureId}")
@@ -36,7 +40,9 @@ class LectureController(
         @PathVariable lectureId: Long,
         @RequestBody updateLectureRequest: UpdateLectureRequest
     ): ResponseEntity<LectureResponse> {
-        return ResponseEntity.ok(lectureService.updateLecture(courseId, lectureId, updateLectureRequest))
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(lectureService.updateLecture(courseId, lectureId, updateLectureRequest))
     }
 
     @DeleteMapping("/{lectureId}")
@@ -45,6 +51,8 @@ class LectureController(
         @PathVariable lectureId: Long,
     ): ResponseEntity<Unit> {
         lectureService.deleteLecture(courseId, lectureId)
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+        return ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .build()
     }
 }
