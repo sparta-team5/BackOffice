@@ -11,7 +11,6 @@ import org.springframework.data.domain.*
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Service
 class CourseService(
@@ -76,8 +75,6 @@ class CourseService(
                 category = request.category,
                 imageUrl = request.imageUrl,
                 viewCount = 0,
-                rate = 0.0,
-                createdAt = LocalDateTime.now()
             )
         )
         return CourseSimpleResponse.from(course)
@@ -87,6 +84,7 @@ class CourseService(
     fun updateCourseById(courseId: Long, request: CourseRequest): CourseSimpleResponse {
         val course = courseRepository.findByIdOrNull(courseId)
             ?: throw RuntimeException("Course not found")
+
         course.apply {
             title = request.title
             description = request.description

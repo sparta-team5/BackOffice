@@ -7,6 +7,7 @@ import domain.lecture.dto.UpdateLectureRequest
 import domain.lecture.model.Lecture
 import domain.lecture.repository.LectureRepository
 import jakarta.transaction.Transactional
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
@@ -21,23 +22,25 @@ class LectureService(
     }
 
     fun addLecture(courseId: Long, request: CreateLectureRequest): LectureResponse {
-        //val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
+        val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
         // TODO( 요청한 사람이 course 주인인지 확인하기)
         return Lecture(
             title = request.title,
             videoUrl = request.videoUrl,
-            courseId = courseId
+            course = course
         ).let { lectureRepository.save(it) }
             .let { LectureResponse.from(it) }
     }
 
     @Transactional
     fun updateLecture(courseId: Long, lectureId: Long, request: UpdateLectureRequest): LectureResponse {
+        val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
         val lecture = lectureRepository.findByIdAndCourseId(lectureId, courseId) ?: throw RuntimeException()
-        // TODO( 요청한 사람이 course 주인인지 확인하기)
-        lecture.title = request.title
-        lecture.videoUrl = request.videoUrl
-        lecture.courseId = request.courseId
+        lecture.apply {
+            this.title = request.title
+            this.videoUrl = request.videoUrl
+            this.course = course
+        }
         return LectureResponse.from(lecture)
 
     }

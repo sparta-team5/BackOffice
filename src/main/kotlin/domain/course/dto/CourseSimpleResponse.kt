@@ -14,7 +14,7 @@ data class CourseSimpleResponse(
             id = course.id!!,
             title = course.title,
             description = course.description,
-            category = course.category,
+            category = course.category.name,
             imageUrl = course.imageUrl,
         )
     }

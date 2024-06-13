@@ -20,8 +20,9 @@ class Course(
     @Column(name = "image_url", nullable = false)
     var imageUrl: String,
 
-    @Column(name = "category", nullable = false)
-    var category: String,
+    @ManyToOne
+    @JoinColumn(name = "category", nullable = false)
+    var category: Category,
 
     @Column(name = "view_count", nullable = false)
     var viewCount: Long,

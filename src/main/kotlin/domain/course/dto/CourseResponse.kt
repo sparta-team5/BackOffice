@@ -18,7 +18,7 @@ data class CourseResponse(
             id = course.id!!,
             title = course.title,
             tutor = course.tutor.nickname,
-            category = course.category,
+            category = course.category.name,
             description = course.description,
             isBookMarked = isBookMarked,
             isSubscribed = isSubscribed,

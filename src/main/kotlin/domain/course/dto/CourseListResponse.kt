@@ -18,7 +18,7 @@ data class CourseListResponse(
             id = course.id!!,
             title = course.title,
             tutor = course.tutor.nickname,
-            category = course.category,
+            category = course.category.name,
             description = course.description,
             imageUrl = course.imageUrl,
             viewCount = course.viewCount,
