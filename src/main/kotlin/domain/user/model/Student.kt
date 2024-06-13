@@ -13,16 +13,16 @@ class Student(
     val email: String,
 
     @Column(name = "password", nullable = true)
-    var password: String,
+    var password: String? = null,
 
     @Column(name = "provider_name", nullable = true)
-    val providerName: String,
+    val providerName: String? = null,
 
     @Column(name = "provider_id", nullable = true)
-    val providerId: String,
+    val providerId: String? = null,
 
     @Column(name = "prev_passwords", nullable = true)
-    val prevPasswords: String,
+    val prevPasswords: String? = null,
 ) {
 
     @Id
