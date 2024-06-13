@@ -34,4 +34,8 @@ class Course(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    fun increaseViewCount() {
+        viewCount += 1
+    }
 }
