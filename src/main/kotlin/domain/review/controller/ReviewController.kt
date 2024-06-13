@@ -15,9 +15,9 @@ class ReviewController(
 ) {
     @GetMapping
     fun getReviewsByCourse(
-        @PathVariable("courseId") courseId: String
+        @PathVariable("courseId") courseId: Long
     ): ResponseEntity<List<ReviewResponse>> {
-        return ResponseEntity.ok(reviewService.getAllReviewsByCourse())
+        return ResponseEntity.status(HttpStatus.OK).body(reviewService.getAllReviewsByCourse(courseId))
     }
 
     @PostMapping
@@ -38,7 +38,7 @@ class ReviewController(
         @PathVariable("reviewId") reviewId: Long,
         @RequestBody updateReviewRequest: UpdateReviewRequest
     ): ResponseEntity<ReviewResponse> {
-        return ResponseEntity.ok(reviewService.updateReview(courseId, reviewId, updateReviewRequest))
+        return ResponseEntity.status(HttpStatus.OK).body(reviewService.updateReview(courseId, reviewId, updateReviewRequest))
     }
 
     @DeleteMapping("/{reviewId}")
@@ -47,6 +47,6 @@ class ReviewController(
         @PathVariable("reviewId") reviewId: Long,
     ): ResponseEntity<Unit> {
         reviewService.deleteReview(courseId, reviewId)
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 }
