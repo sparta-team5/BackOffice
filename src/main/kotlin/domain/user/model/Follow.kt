@@ -1,20 +1,14 @@
 package domain.user.model
 
-import jakarta.persistence.*
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
 
 @Entity
-@Table(name="follow")
+@Table(name = "follow")
 class Follow(
 
     @EmbeddedId
     val id: FollowId,
 
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    val student: Student,
-
-    @ManyToOne
-    @JoinColumn(name = "tutor_id", nullable = false)
-    val tutor: Tutor
-
-)
+    )
