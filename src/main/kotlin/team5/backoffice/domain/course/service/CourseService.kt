@@ -6,7 +6,6 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team5.backoffice.domain.auth.tutor.service.TutorService
 import team5.backoffice.domain.course.dto.*
 import team5.backoffice.domain.course.model.*
 import team5.backoffice.domain.course.repository.BookmarkRepository
@@ -20,7 +19,6 @@ import team5.backoffice.domain.user.repository.TutorRepository
 class CourseService(
     private val courseRepository: CourseRepository,
     private val studentRepository: StudentRepository,
-    private val tutorService: TutorService,
     private val subscriptionRepository: SubscriptionRepository,
     private val bookmarkRepository: BookmarkRepository,
     private val categoryRepository: CategoryRepository,
