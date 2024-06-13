@@ -1,5 +1,6 @@
 package domain.course.controller
 
+import domain.auth.dto.GetUserInfoRequest
 import domain.course.dto.*
 import domain.course.service.CourseService
 import org.springframework.http.HttpStatus
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/courses")
 class CourseController(
-    private val courseService: CourseService
+    private val courseService: CourseService,
 ) {
 
     @GetMapping()
@@ -46,33 +47,36 @@ class CourseController(
     @PostMapping()
     fun createCourse(
         @RequestBody request: CourseRequest,
+        @RequestBody tutorInfo: GetUserInfoRequest
     ): ResponseEntity<CourseSimpleResponse> {
-        //토큰에서 id 추출 후 넘겨주기? tutorId = ContextHolder.content.subject
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(courseService.createCourse(request, tutorId))
+            .body(courseService.createCourse(request, tutorInfo))
     }
 
     @PutMapping("/{courseId}")
     fun updateCourse(
         @PathVariable courseId: Long,
         @RequestBody request: CourseRequest,
+        @RequestBody tutorInfo: GetUserInfoRequest
     ): ResponseEntity<CourseSimpleResponse> {
-        //토큰에서 id 추출 후 넘겨주기? tutorId = ContextHolder.content.subject
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(courseService.updateCourseById(courseId, request, tutorId))
+        return courseService.checkValidate(tutorInfo.token).let {
+            ResponseEntity
+                .status(HttpStatus.OK)
+                .body(courseService.updateCourseById(courseId, request))
+        }
     }
 
     @DeleteMapping("/{courseId}")
     fun deleteCourse(
         @PathVariable courseId: Long,
+        @RequestBody tutorInfo: GetUserInfoRequest
     ): ResponseEntity<Unit> {
-        //토큰에서 id 추출 후 넘겨주기? tutorId = ContextHolder.content.subject
-        courseService.deleteCourseById(courseId, tutorId)
-        return ResponseEntity
-            .status(HttpStatus.NO_CONTENT)
-            .build()
+        return courseService.checkValidate(tutorInfo.token).let {
+            ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(courseService.deleteCourseById(courseId))
+        }
     }
 
     @PostMapping("/{courseId}/bookmark")

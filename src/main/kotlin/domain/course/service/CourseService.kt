@@ -1,10 +1,12 @@
 package domain.course.service
 
+import domain.auth.dto.GetUserInfoRequest
+import domain.auth.tutor.service.TutorService
 import domain.course.dto.*
 import domain.course.model.Course
 import domain.course.repository.CourseRepository
+import domain.user.model.Tutor
 import domain.user.repository.StudentRepository
-import domain.user.repository.TutorRepository
 import org.springframework.data.domain.*
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -15,7 +17,7 @@ import java.time.LocalDateTime
 class CourseService(
     private val courseRepository: CourseRepository,
     private val studentRepository: StudentRepository,
-    private val tutorRepository: TutorRepository,
+    private val tutorService: TutorService
 ) {
 
     fun getAllCourses(cursor: CursorRequest, studentId: Long?): CursorPageResponse {
@@ -65,14 +67,11 @@ class CourseService(
     }
 
 
-    fun createCourse(request: CourseRequest, tutorId: Long): CourseSimpleResponse {
-        val tutor = tutorRepository.findByIdOrNull(tutorId)
-            ?: throw RuntimeException("Tutor not found")
-
+    fun createCourse(request: CourseRequest, tutorInfo: GetUserInfoRequest): CourseSimpleResponse {
         val course = courseRepository.save(
             Course(
                 title = request.title,
-                tutor = tutor,
+                tutor = tutorService.getTutorInfo(tutorInfo),
                 description = request.description,
                 category = request.category,
                 imageUrl = request.imageUrl,
@@ -85,12 +84,9 @@ class CourseService(
     }
 
     @Transactional
-    fun updateCourseById(courseId: Long, request: CourseRequest, tutorId: Long): CourseSimpleResponse {
+    fun updateCourseById(courseId: Long, request: CourseRequest): CourseSimpleResponse {
         val course = courseRepository.findByIdOrNull(courseId)
             ?: throw RuntimeException("Course not found")
-        if (tutorId != course.tutor.id) {
-            throw RuntimeException("No Permission")
-        }
         course.apply {
             title = request.title
             description = request.description
@@ -101,12 +97,9 @@ class CourseService(
         return CourseSimpleResponse.from(course)
     }
 
-    fun deleteCourseById(courseId: Long, tutorId: Long) {
+    fun deleteCourseById(courseId: Long) {
         val course = courseRepository.findByIdOrNull(courseId)
             ?: throw RuntimeException("Course not found")
-        if (tutorId != course.tutor.id) {
-            throw RuntimeException("No Permission")
-        }
         courseRepository.delete(course)
         println("Course ${course.id} has been successfully deleted")
     }
@@ -156,5 +149,11 @@ class CourseService(
 
     private fun existSubscribe(studentId: Long, courseId: Long): Boolean {
         // TODO : subscription 에 student 와 course 를 가진 개체가 있는지 확인
+    }
+
+    fun checkValidate(token: String): Tutor {
+        return tutorService.getTutorInfo(
+            GetUserInfoRequest(token = token)
+        )
     }
 }
