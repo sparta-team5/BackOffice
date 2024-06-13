@@ -1,6 +1,5 @@
 package domain.user.service
 
-import com.sun.security.auth.UserPrincipal
 import domain.user.dto.*
 import domain.user.repository.StudentRepository
 import domain.user.repository.TutorRepository
@@ -15,7 +14,7 @@ class UserService(
 ) {
 
 
-    fun getStudentById(studentId:Long) : StudentResponseDto {
+    fun getStudentById(studentId: Long): StudentResponseDto {
         val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")
 
         return StudentResponseDto.from(student)
@@ -23,9 +22,9 @@ class UserService(
 
 
     @Transactional
-    fun updateStudentById( studentId :Long, request : UpdateStudentRequestDto) : StudentResponseDto {
+    fun updateStudentById(studentId: Long, request: UpdateStudentRequestDto): StudentResponseDto {
 
-        val student = studentRepository.findByIdOrNull(studentId)?:throw RuntimeException("Student")
+        val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")
         //todo : null이면 예외 던지기
 
         //todo : user가져오기
@@ -37,8 +36,8 @@ class UserService(
 
     }
 
-    fun deleteStudentById(studentId :Long){
-        val student = studentRepository.findByIdOrNull(studentId)?:throw RuntimeException("Student")
+    fun deleteStudentById(studentId: Long) {
+        val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")
         //todo : null이면 예외 던지기
 
         //todo : 토큰에서 user가져오기
@@ -53,7 +52,7 @@ class UserService(
 //
 //    }
 
-    fun getTutorById(tutorId : Long): TutorResponseDto{
+    fun getTutorById(tutorId: Long): TutorResponseDto {
 
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
 
@@ -61,7 +60,7 @@ class UserService(
 
     }
 
-    fun updateTutorById(tutorId: Long, request: UpdateTutorRequestDto):TutorResponseDto{
+    fun updateTutorById(tutorId: Long, request: UpdateTutorRequestDto): TutorResponseDto {
 
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
 
@@ -70,9 +69,9 @@ class UserService(
         //todo : 토큰에서 user가져오기
         //todo : 본인이 아니면 throw IllegalAccessException
 
-        tutor.apply{
-            nickname = request.nickname,
-            description = request.description,
+        tutor.apply {
+            nickname = request.nickname
+            description = request.description
             career = request.career
 
         }
@@ -81,7 +80,7 @@ class UserService(
 
     }
 
-    fun deleteTutorById(tutorId: Long){
+    fun deleteTutorById(tutorId: Long) {
 
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
         //todo : null이면 예외 던지기
@@ -97,11 +96,11 @@ class UserService(
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
 
         //todo : follow 요청한 Userid 토큰에서 가져오기
-
+        TODO()
 
     }
 
-    fun unfollowStudentAndUser(tutorId:Long){
+    fun unfollowStudentAndUser(tutorId: Long) {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
 
         //todo : unfollow 요청한 Userid 토큰에서 가져오기
