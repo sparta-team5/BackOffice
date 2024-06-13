@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/auth/tutor")
-class TutorController(
+class TutorAuthController(
     private val tutorService: TutorService
 ) {
     @PostMapping("/signup")
