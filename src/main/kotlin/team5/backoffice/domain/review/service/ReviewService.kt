@@ -18,9 +18,9 @@ class ReviewService(
     private val studentRepository: StudentRepository,
 ) {
 
-    fun addReview(courseId: Long, request: ReviewRequest): ReviewResponse {
+    fun addReview(courseId: Long, request: ReviewRequest, studentId: Long): ReviewResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("course not found")
-        val student = studentRepository.findByIdOrNull(request.studentId) ?: throw RuntimeException("student not found")
+        val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("student not found")
         return Review(
             course = course,
             student = student,
@@ -30,11 +30,11 @@ class ReviewService(
             .let { ReviewResponse.from(it) }
     }
 
-    fun updateReview(courseId: Long, reviewId: Long, request: ReviewRequest): ReviewResponse {
+    fun updateReview(courseId: Long, reviewId: Long, request: ReviewRequest, studentId: Long): ReviewResponse {
         val review =
             reviewRepository.findByIdAndCourseId(reviewId, courseId) ?: throw RuntimeException("review not found")
-        studentRepository.findByIdOrNull(request.studentId) ?: throw RuntimeException("student not found")
-        // TODO review 작성자가 요청을 보낸 사람과 같은지 확인
+        if (review.student.id != studentId) throw RuntimeException()
+
         review.apply {
             this.body = request.body
             this.rate = request.rate
@@ -42,10 +42,10 @@ class ReviewService(
         return ReviewResponse.from(review)
     }
 
-    fun deleteReview(courseId: Long, reviewId: Long): Unit {
+    fun deleteReview(courseId: Long, reviewId: Long, studentId: Long) {
         val review =
             reviewRepository.findByIdAndCourseId(reviewId, courseId) ?: throw RuntimeException("review not found")
-        // TODO review 작성자가 요청을 보낸 사람과 같은지 확인
+        if (review.student.id != studentId) throw RuntimeException()
         reviewRepository.delete(review)
     }
 

@@ -1,13 +1,16 @@
 package team5.backoffice.domain.auth.tutor.controller
 
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
+import org.springframework.web.bind.annotation.*
 import team5.backoffice.domain.auth.dto.ChangePasswordRequest
 import team5.backoffice.domain.auth.dto.LoginRequest
 import team5.backoffice.domain.auth.dto.SignUpRequest
 import team5.backoffice.domain.auth.tutor.service.TutorService
 import team5.backoffice.domain.user.dto.TutorResponse
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import team5.backoffice.infra.security.UserPrincipal
 
 @RestController
 @RequestMapping("/auth/tutor")
@@ -33,12 +36,15 @@ class TutorAuthController(
     }
 
     @PatchMapping("/change-password")
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     fun changePassword(
-        @RequestBody changePasswordRequest: ChangePasswordRequest
+        @RequestBody changePasswordRequest: ChangePasswordRequest,
+        authentication: Authentication
     ): ResponseEntity<Boolean> {
+        val tutorPrincipal = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(tutorService.changeTutorPassword(changePasswordRequest))
+            .body(tutorService.changeTutorPassword(changePasswordRequest, tutorPrincipal.email))
 
     }
 }

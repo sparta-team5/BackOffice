@@ -17,7 +17,6 @@ class UserService(
         return StudentResponse.from(student)
     }
 
-
     @Transactional
     fun updateStudentById(studentId: Long, request: UpdateStudentRequest): StudentResponse {
         val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")

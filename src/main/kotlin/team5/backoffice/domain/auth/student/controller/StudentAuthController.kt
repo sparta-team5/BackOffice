@@ -1,13 +1,16 @@
 package team5.backoffice.domain.auth.student.controller
 
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
+import org.springframework.web.bind.annotation.*
 import team5.backoffice.domain.auth.dto.ChangePasswordRequest
 import team5.backoffice.domain.auth.dto.LoginRequest
 import team5.backoffice.domain.auth.dto.SignUpRequest
 import team5.backoffice.domain.auth.student.service.StudentService
 import team5.backoffice.domain.user.dto.StudentResponse
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import team5.backoffice.infra.security.UserPrincipal
 
 @RestController
 @RequestMapping("/auth/student")
@@ -34,12 +37,15 @@ class StudentAuthController(
     }
 
     @PatchMapping("/change-password")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     fun changePassword(
-        @RequestBody changePasswordRequest: ChangePasswordRequest
+        @RequestBody changePasswordRequest: ChangePasswordRequest,
+        authentication: Authentication
     ): ResponseEntity<Boolean> {
+        val studentPrincipal = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(studentService.changeStudentPassword(changePasswordRequest))
+            .body(studentService.changeStudentPassword(changePasswordRequest, studentPrincipal.email))
 
     }
 
