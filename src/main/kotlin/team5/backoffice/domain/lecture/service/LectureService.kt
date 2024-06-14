@@ -21,9 +21,9 @@ class LectureService(
         return LectureResponse.from(lecture)
     }
 
-    fun addLecture(courseId: Long, request: CreateLectureRequest): LectureResponse {
+    fun addLecture(courseId: Long, request: CreateLectureRequest, tutorId: Long): LectureResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
-        // TODO( 요청한 사람이 course 주인인지 확인하기)
+        if (course.tutor.id != tutorId) throw RuntimeException()
         return Lecture(
             title = request.title,
             videoUrl = request.videoUrl,
@@ -33,9 +33,10 @@ class LectureService(
     }
 
     @Transactional
-    fun updateLecture(courseId: Long, lectureId: Long, request: UpdateLectureRequest): LectureResponse {
+    fun updateLecture(courseId: Long, lectureId: Long, request: UpdateLectureRequest, tutorId: Long): LectureResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
         val lecture = lectureRepository.findByIdAndCourseId(lectureId, courseId) ?: throw RuntimeException()
+        if (course.tutor.id != tutorId) throw RuntimeException()
         lecture.apply {
             this.title = request.title
             this.videoUrl = request.videoUrl
@@ -45,8 +46,9 @@ class LectureService(
 
     }
 
-    fun deleteLecture(courseId: Long, lectureId: Long): Unit {
-        // TODO( 요청한 사람이 course 주인인지 확인하기)
+    fun deleteLecture(courseId: Long, lectureId: Long, tutorId: Long): Unit {
+        val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
+        if (course.tutor.id != tutorId) throw RuntimeException()
         val lecture = lectureRepository.findByIdAndCourseId(lectureId, courseId) ?: throw RuntimeException()
         lectureRepository.delete(lecture)
     }

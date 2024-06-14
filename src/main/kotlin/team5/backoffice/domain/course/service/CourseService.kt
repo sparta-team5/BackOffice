@@ -5,15 +5,12 @@ import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team5.backoffice.domain.auth.dto.GetUserInfoRequest
-import team5.backoffice.domain.auth.tutor.service.TutorService
 import team5.backoffice.domain.course.dto.*
 import team5.backoffice.domain.course.model.*
 import team5.backoffice.domain.course.repository.BookmarkRepository
 import team5.backoffice.domain.course.repository.CategoryRepository
 import team5.backoffice.domain.course.repository.CourseRepository
 import team5.backoffice.domain.course.repository.SubscriptionRepository
-import team5.backoffice.domain.user.model.Tutor
 import team5.backoffice.domain.user.repository.StudentRepository
 import team5.backoffice.domain.user.repository.TutorRepository
 
@@ -21,7 +18,6 @@ import team5.backoffice.domain.user.repository.TutorRepository
 class CourseService(
     private val courseRepository: CourseRepository,
     private val studentRepository: StudentRepository,
-    private val tutorService: TutorService,
     private val subscriptionRepository: SubscriptionRepository,
     private val bookmarkRepository: BookmarkRepository,
     private val categoryRepository: CategoryRepository,
@@ -55,10 +51,9 @@ class CourseService(
 //        return CursorPageResponse(pageResponse, nextCursor)
 //    }
 
-
-    fun createCourse(request: CourseRequest): CourseSimpleResponse {
+    fun createCourse(request: CourseRequest, tutorId: Long): CourseSimpleResponse {
         val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
-        val tutor = tutorRepository.findByIdOrNull(request.tutorId) ?: throw RuntimeException("Tid not found")
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tid not found")
         return courseRepository.save(
             Course(
                 title = request.title,
@@ -72,10 +67,10 @@ class CourseService(
     }
 
     @Transactional
-    fun updateCourseById(courseId: Long, request: CourseRequest): CourseSimpleResponse {
+    fun updateCourseById(courseId: Long, request: CourseRequest, tutorId: Long): CourseSimpleResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
         val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
-        if (course.tutor.id != request.tutorId) throw RuntimeException("Unauthorized tutor")
+        if (course.tutor.id != tutorId) throw RuntimeException("Unauthorized tutor")
         course.apply {
             this.title = request.title
             this.description = request.description
@@ -85,8 +80,9 @@ class CourseService(
         return CourseSimpleResponse.from(course)
     }
 
-    fun deleteCourseById(courseId: Long) {
+    fun deleteCourseById(courseId: Long, tutorId: Long) {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
+        if (course.tutor.id != tutorId) throw RuntimeException("Unauthorized tutor")
         courseRepository.delete(course)
     }
 
@@ -132,12 +128,5 @@ class CourseService(
         }
         else courseSlice.content.map { CourseListResponse.from(it, isBookmarked = false, isSubscribed = false) }
 
-    }
-
-
-    fun checkValidate(token: String): Tutor {
-        return tutorService.getTutorInfo(
-            GetUserInfoRequest(token = token)
-        )
     }
 }
