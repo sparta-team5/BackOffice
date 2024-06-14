@@ -34,21 +34,20 @@ class StudentService(
     }
 
     fun loginStudent(loginRequest: LoginRequest): String {
-        val token = studentRepository.findByEmail(loginRequest.email)
-            .let { student ->
-                if (passwordEncoder.matches(loginRequest.password, student.password)) {
-                    jwtPlugin.generateAccessToken(
-                        subject = student.id.toString(),
-                        email = student.email,
-                        role = "STUDENT"
-                    )
-                } else throw AuthenticationException("Password is incorrect")
-            }
-        return token
+        val student = studentRepository.findByEmail(loginRequest.email) ?: throw RuntimeException("student not found")
+
+        return if (passwordEncoder.matches(loginRequest.password, student.password)) {
+            jwtPlugin.generateAccessToken(
+                subject = student.id.toString(),
+                email = student.email,
+                role = "STUDENT"
+            )
+        } else throw AuthenticationException("Password is incorrect")
+
     }
 
     fun changeStudentPassword(request: ChangePasswordRequest, studentEmail: String): Boolean {
-        val student = studentRepository.findByEmail(studentEmail)
+        val student = studentRepository.findByEmail(studentEmail) ?: throw RuntimeException("student not found")
         if (passwordEncoder.matches(request.password, student.password)) {
             if (!passwordEncoder.matches(request.newPassword, student.password)) {
                 student.password = passwordEncoder.encode(request.newPassword)

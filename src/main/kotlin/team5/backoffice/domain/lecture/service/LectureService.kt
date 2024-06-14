@@ -46,7 +46,7 @@ class LectureService(
 
     }
 
-    fun deleteLecture(courseId: Long, lectureId: Long, tutorId: Long): Unit {
+    fun deleteLecture(courseId: Long, lectureId: Long, tutorId: Long) {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
         if (course.tutor.id != tutorId) throw RuntimeException()
         val lecture = lectureRepository.findByIdAndCourseId(lectureId, courseId) ?: throw RuntimeException()

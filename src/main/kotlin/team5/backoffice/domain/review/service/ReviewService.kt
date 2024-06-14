@@ -42,7 +42,7 @@ class ReviewService(
         return ReviewResponse.from(review)
     }
 
-    fun deleteReview(courseId: Long, reviewId: Long, studentId: Long): Unit {
+    fun deleteReview(courseId: Long, reviewId: Long, studentId: Long) {
         val review =
             reviewRepository.findByIdAndCourseId(reviewId, courseId) ?: throw RuntimeException("review not found")
         if (review.student.id != studentId) throw RuntimeException()
