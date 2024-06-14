@@ -1,7 +1,7 @@
 package team5.backoffice.domain.course.model
 
-import team5.backoffice.domain.user.model.Tutor
 import jakarta.persistence.*
+import team5.backoffice.domain.user.model.Tutor
 import java.time.LocalDateTime
 
 @Entity

@@ -1,6 +1,5 @@
 package team5.backoffice.infra.querydsl
 
-import com.querydsl.core.QueryFactory
 import com.querydsl.jpa.impl.JPAQueryFactory
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext

@@ -1,20 +1,14 @@
 package team5.backoffice.domain.course.repository.CourseRepository
 
 import com.querydsl.core.BooleanBuilder
-import com.querydsl.core.types.dsl.BooleanExpression
-import com.querydsl.core.types.dsl.ComparableExpressionBase
 import com.querydsl.jpa.impl.JPAQuery
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Slice
-import org.springframework.data.domain.SliceImpl
 import org.springframework.stereotype.Repository
 import team5.backoffice.domain.course.dto.CursorRequest
 import team5.backoffice.domain.course.model.Course
 import team5.backoffice.domain.course.model.OrderType
 import team5.backoffice.domain.course.model.QCourse
 import team5.backoffice.infra.querydsl.QueryDslSupport
-import java.time.LocalDateTime
 
 @Repository
 class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
