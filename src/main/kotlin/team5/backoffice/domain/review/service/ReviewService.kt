@@ -1,5 +1,6 @@
 package team5.backoffice.domain.review.service
 
+import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import team5.backoffice.domain.course.repository.CourseRepository
@@ -19,12 +20,12 @@ class ReviewService(
     private val tutorRepository: TutorRepository,
     private val studentRepository: StudentRepository,
 ) {
-
+    @Transactional
     fun addReview(courseId: Long, request: ReviewRequest, studentId: Long): ReviewResponse {
-        val course =
-            courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
-        val student =
-            studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
+        val course = courseRepository.findByIdOrNull(courseId)
+            ?: throw ModelNotFoundException("course", "id: $courseId")
+        val student = studentRepository.findByIdOrNull(studentId)
+            ?: throw ModelNotFoundException("student", "id: $studentId")
         return Review(
             course = course,
             student = student,
@@ -34,12 +35,10 @@ class ReviewService(
             .let { ReviewResponse.from(it) }
     }
 
+    @Transactional
     fun updateReview(courseId: Long, reviewId: Long, request: ReviewRequest, studentId: Long): ReviewResponse {
-        val review =
-            reviewRepository.findByIdAndCourseId(reviewId, courseId) ?: throw ModelNotFoundException(
-                "review",
-                "id: $reviewId"
-            )
+        val review = reviewRepository.findByIdAndCourseId(reviewId, courseId)
+            ?: throw ModelNotFoundException("review", "id: $reviewId")
         if (review.student.id != studentId) throw UnauthorizedUserException()
 
         review.apply {
@@ -49,12 +48,10 @@ class ReviewService(
         return ReviewResponse.from(review)
     }
 
+    @Transactional
     fun deleteReview(courseId: Long, reviewId: Long, studentId: Long) {
-        val review =
-            reviewRepository.findByIdAndCourseId(reviewId, courseId) ?: throw ModelNotFoundException(
-                "review",
-                "id: $reviewId"
-            )
+        val review = reviewRepository.findByIdAndCourseId(reviewId, courseId)
+            ?: throw ModelNotFoundException("review", "id: $reviewId")
         if (review.student.id != studentId) throw UnauthorizedUserException()
         reviewRepository.delete(review)
     }

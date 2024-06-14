@@ -33,6 +33,7 @@ class UserService(
         return studentRepository.save(student).let { StudentResponse.from(student) }
     }
 
+    @Transactional
     fun deleteStudentById(studentId: Long) {
         val student =
             studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
@@ -45,6 +46,7 @@ class UserService(
         return TutorResponse.from(tutor)
     }
 
+    @Transactional
     fun updateTutorById(tutorId: Long, request: UpdateTutorRequest): TutorResponse {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("tutor", "id: $tutorId")
 
@@ -56,11 +58,13 @@ class UserService(
         return tutorRepository.save(tutor).let { TutorResponse.from(tutor) }
     }
 
+    @Transactional
     fun deleteTutorById(tutorId: Long) {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("tutor", "id: $tutorId")
         tutorRepository.delete(tutor)
     }
 
+    @Transactional
     fun followStudentAndTutor(tutorId: Long, studentId: Long): FollowResponse {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("tutor", "id: $tutorId")
         if (followRepository.existsById(
@@ -75,6 +79,7 @@ class UserService(
 
     }
 
+    @Transactional
     fun unfollowStudentAndTutor(tutorId: Long, studentId: Long) {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("tutor", "id: $tutorId")
         val follow = followRepository.findByIdOrNull(FollowId(studentId, tutor.id!!))

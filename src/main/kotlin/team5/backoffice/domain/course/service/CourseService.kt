@@ -54,6 +54,7 @@ class CourseService(
 //        return CursorPageResponse(pageResponse, nextCursor)
 //    }
 
+    @Transactional
     fun createCourse(request: CourseRequest, tutorId: Long): CourseSimpleResponse {
         val category = categoryRepository.findByName(request.category) ?: throw ModelNotFoundException(
             "category",
@@ -90,6 +91,7 @@ class CourseService(
         return CourseSimpleResponse.from(course)
     }
 
+    @Transactional
     fun deleteCourseById(courseId: Long, tutorId: Long) {
         val course =
             courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
@@ -97,6 +99,7 @@ class CourseService(
         courseRepository.delete(course)
     }
 
+    @Transactional
     fun addBookmark(courseId: Long, studentId: Long) {
         courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
         studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
@@ -105,6 +108,7 @@ class CourseService(
         }
     }
 
+    @Transactional
     fun removeBookmark(courseId: Long, studentId: Long) {
         courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
         studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
@@ -113,6 +117,7 @@ class CourseService(
         bookmarkRepository.delete(bookmark)
     }
 
+    @Transactional
     fun subscribe(courseId: Long, studentId: Long) {
         courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
         studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")

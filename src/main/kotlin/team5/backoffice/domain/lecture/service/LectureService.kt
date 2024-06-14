@@ -36,6 +36,7 @@ class LectureService(
         return LectureResponse.from(lecture)
     }
 
+    @Transactional
     fun addLecture(courseId: Long, request: CreateLectureRequest, tutorId: Long): LectureResponse {
         val course =
             courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
@@ -66,6 +67,7 @@ class LectureService(
 
     }
 
+    @Transactional
     fun deleteLecture(courseId: Long, lectureId: Long, tutorId: Long) {
         val course =
             courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")

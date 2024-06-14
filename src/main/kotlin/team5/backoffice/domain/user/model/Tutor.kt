@@ -38,9 +38,4 @@ class Tutor(
         oldPassword1 = password
         password = newPassword
     }
-
-    fun isNewPasswordValid(newPassword: String): Boolean {
-        return newPassword != oldPassword1 && newPassword != oldPassword2 && newPassword != password
-    }
-
 }
