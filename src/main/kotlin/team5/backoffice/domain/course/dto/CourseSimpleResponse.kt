@@ -7,14 +7,14 @@ data class CourseSimpleResponse(
     val title: String,
     val description: String,
     val imageUrl: String,
-    val category: String,
+//    val category: String,
 ) {
     companion object {
         fun from(course: Course) = CourseSimpleResponse(
             id = course.id!!,
             title = course.title,
             description = course.description,
-            category = course.category.name,
+//            category = course.category.name,
             imageUrl = course.imageUrl,
         )
     }

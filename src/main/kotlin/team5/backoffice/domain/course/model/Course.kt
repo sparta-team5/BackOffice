@@ -21,15 +21,18 @@ class Course(
     @Column(name = "image_url", nullable = false)
     var imageUrl: String,
 
-    @ManyToOne
-    @JoinColumn(name = "category", nullable = false)
-    var category: Category,
+//    @ManyToOne
+//    @JoinColumn(name = "category", nullable = false)
+//    var category: Category,
 
     @Column(name = "view_count", nullable = false)
     var viewCount: Long,
 
     @Column(name = "created_at", nullable = false)
-    val createdTime: LocalDateTime,
+    val createdAt: LocalDateTime,
+
+//    @Column(name = "rate", nullable = false)
+//    val rate: Double,
 
     ) {
     @Id

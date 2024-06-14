@@ -1,35 +1,40 @@
 package team5.backoffice.domain.course.service
 
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Slice
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import team5.backoffice.domain.auth.dto.GetUserInfoRequest
+import team5.backoffice.domain.auth.tutor.service.TutorService
 import team5.backoffice.domain.course.dto.*
 import team5.backoffice.domain.course.model.*
 import team5.backoffice.domain.course.repository.BookmarkRepository
 import team5.backoffice.domain.course.repository.CategoryRepository
-import team5.backoffice.domain.course.repository.CourseRepository
+import team5.backoffice.domain.course.repository.CourseRepository.CourseRepository
 import team5.backoffice.domain.course.repository.SubscriptionRepository
+import team5.backoffice.domain.user.model.Tutor
 import team5.backoffice.domain.user.repository.StudentRepository
 import team5.backoffice.domain.user.repository.TutorRepository
+import java.time.LocalDateTime
 
 @Service
 class CourseService(
     private val courseRepository: CourseRepository,
     private val studentRepository: StudentRepository,
+    private val tutorService: TutorService,
     private val subscriptionRepository: SubscriptionRepository,
     private val bookmarkRepository: BookmarkRepository,
     private val categoryRepository: CategoryRepository,
     private val tutorRepository: TutorRepository,
 ) {
 
-    fun getAllCourses(cursor: CursorRequest, studentId: Long?): CursorPageResponse {
-        val pageable = PageRequest.of(0, cursor.page)
-        val courseSlice: Slice<Course> = courseRepository.findAllCourse(cursor.cursor, pageable, cursor.orderBy)
-        val nextCursor = if (courseSlice.hasNext()) courseSlice.nextPageable().pageNumber else null
-        val pageResponse = sliceToListResponse(courseSlice, studentId)
-        return CursorPageResponse(pageResponse, nextCursor)
+    fun getAllCourses(cursor: CursorRequest, pageSize: Int, studentId: Long?): CursorPageResponse {
+        val courses = coursesToListResponse(courseRepository.findAllCourses(cursor, pageSize), studentId)
+        val nextCursor = when (cursor.cursorOrderType) {
+            OrderType.createdAt -> courses.lastOrNull()?.createdAt ?: LocalDateTime.now()
+            OrderType.viewCount -> courses.lastOrNull()?.viewCount ?: Long.MAX_VALUE
+        }
+        return CursorPageResponse(courses, nextCursor)
     }
 
     fun getCourseById(courseId: Long, studentId: Long?): CourseResponse {
@@ -41,49 +46,45 @@ class CourseService(
             CourseResponse.from(course, isBookMarked = false, isSubscribed = false)
         }
     }
-//
-//    fun getFilteredCourses(cursor: CursorRequest, filter: FilteringRequest, studentId: Long?): CursorPageResponse {
-//        val pageable = PageRequest.of(0, cursor.page)
-//        val courseSlice: Slice<Course> =
-//            courseRepository.findAllByCursorAndFilter(cursor.cursor, pageable, cursor.orderBy, filter) // 동적쿼리필요
-//        val nextCursor: Int? = courseSlice.nextPageable().pageNumber ?: null
-//        val pageResponse = sliceToListResponse(courseSlice, studentId)
-//        return CursorPageResponse(pageResponse, nextCursor)
-//    }
+
+    fun getFilteredCourses(filter: FilteringRequest, pageable: Pageable, studentId: Long?): List<CourseListResponse> {
+        val courses = courseRepository.findByFilter(filter, pageable)
+        return coursesToListResponse(courses, studentId)
+    }
 
 
     fun createCourse(request: CourseRequest): CourseSimpleResponse {
-        val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
-        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tid not found")
+//        val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
+        val tutor = tutorRepository.findByIdOrNull(request.tutorId) ?: throw RuntimeException("Tid not found")
         return courseRepository.save(
             Course(
                 title = request.title,
                 tutor = tutor,
                 description = request.description,
-                category = category,
+//                category = category,
                 imageUrl = request.imageUrl,
                 viewCount = 0,
+                createdAt = LocalDateTime.now()
             )
         ).let { CourseSimpleResponse.from(it) }
     }
 
     @Transactional
-    fun updateCourseById(courseId: Long, request: CourseRequest, tutorId: Long): CourseSimpleResponse {
+    fun updateCourseById(courseId: Long, request: CourseRequest): CourseSimpleResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
-        val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
-        if (course.tutor.id != tutorId) throw RuntimeException("Unauthorized tutor")
+//        val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
+        if (course.tutor.id != request.tutorId) throw RuntimeException("Unauthorized tutor")
         course.apply {
             this.title = request.title
             this.description = request.description
-            this.category = category
+//            this.category = category
             this.imageUrl = request.imageUrl
         }
         return CourseSimpleResponse.from(course)
     }
 
-    fun deleteCourseById(courseId: Long, tutorId: Long) {
+    fun deleteCourseById(courseId: Long) {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
-        if (course.tutor.id != tutorId) throw RuntimeException("Unauthorized tutor")
         courseRepository.delete(course)
     }
 
@@ -119,15 +120,22 @@ class CourseService(
         return subscriptionRepository.existsById(SubscriptionId(courseId, studentId))
     }
 
-    fun sliceToListResponse(courseSlice: Slice<Course>, studentId: Long?): List<CourseListResponse> {
-        return if (studentId != null) courseSlice.content.map {
+    fun coursesToListResponse(courses: List<Course>, studentId: Long?): List<CourseListResponse> {
+        return if (studentId != null) courses.map {
             CourseListResponse.from(
                 it,
                 isBookmarkExists(it.id!!, studentId),
                 isSubscribeExists(it.id, studentId)
             )
         }
-        else courseSlice.content.map { CourseListResponse.from(it, isBookmarked = false, isSubscribed = false) }
+        else courses.map { CourseListResponse.from(it, isBookmarked = false, isSubscribed = false) }
 
     }
+
+
+//    fun checkValidate(token: String): Tutor {
+//        return tutorService.getTutorInfo(
+//            GetUserInfoRequest(token = token)
+//        )
+//    }
 }

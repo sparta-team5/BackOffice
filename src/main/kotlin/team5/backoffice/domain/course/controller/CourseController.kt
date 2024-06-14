@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import team5.backoffice.domain.course.dto.*
+import team5.backoffice.domain.course.model.PageRequest
 import team5.backoffice.domain.course.service.CourseService
 
 @RestController
@@ -16,34 +17,31 @@ class CourseController(
     @GetMapping()
     fun getAllCourses(
         @ModelAttribute cursor: CursorRequest,
-        pageable: Pageable
+        @RequestParam pageSize: Int
     ): ResponseEntity<CursorPageResponse> {
-        // val studentId : Long? = 있으면 받고 없으면 null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getAllCourses(cursor, pageable, 1L)) //TODO(need to be changed after security implemented)
+            .body(courseService.getAllCourses(cursor, pageSize, 1L)) //TODO(need to be changed after security implemented)
     }
 
     @GetMapping("/{courseId}")
     fun getCourseById(
         @PathVariable courseId: Long,
     ): ResponseEntity<CourseResponse> {
-        // val studentId : Long? = 있으면 받고 없으면 null
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(courseService.getCourseById(courseId, 1L)) //TODO(need to be changed after security implemented)
     }
 
-//    @GetMapping("/filter") //(category=?title=?rate=?...)
-//    fun getFilteredCourses(
-//        @ModelAttribute cursorRequest: CursorRequest,
-//        @ModelAttribute filter: FilteringRequest
-//    ): ResponseEntity<CursorPageResponse> {
-//        // val studentId : Long? = 있으면 받고 없으면 null
-//        return ResponseEntity
-//            .status(HttpStatus.OK)
-//            .body(courseService.getFilteredCourses(cursorRequest, filter, 1L))
-//    }
+    @GetMapping("/filter")
+    fun getFilteredCourses(
+        @ModelAttribute filter: FilteringRequest,
+        pageable: Pageable
+    ): ResponseEntity<List<CourseListResponse>> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(courseService.getFilteredCourses(filter, pageable, 1L))
+    }
 
     @PostMapping()
     fun createCourse(

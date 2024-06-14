@@ -1,10 +1,13 @@
 package team5.backoffice.domain.course.dto
 
+import team5.backoffice.domain.course.model.Category
+
 data class FilteringRequest(
     val title: String,
-    val tutorName: String,
-    val category: String,
-    val rate: Double,
-    val isBookmarked: Boolean,
-    val isSubscribed: Boolean
+    val description: String,
+    val tutorNickName: String,
+//    val category: Category,
+//    val rate: Double,
+//    val isBookmarked: Boolean,
+//    val isSubscribed: Boolean
 )

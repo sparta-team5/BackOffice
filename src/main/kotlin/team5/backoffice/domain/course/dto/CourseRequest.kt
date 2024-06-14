@@ -5,5 +5,5 @@ data class CourseRequest(
     val title: String,
     val description: String,
     val imageUrl: String,
-    val category: String,
+//    val category: String,
 )

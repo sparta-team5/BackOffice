@@ -9,24 +9,24 @@ data class CourseListResponse(
     val tutor: String,
     val description: String,
     val imageUrl: String,
-    val category: String,
+//    val category: String,
     val isBookmarked: Boolean = false,
     val isSubscribed: Boolean = false,
     val viewCount: Long,
-    val createdTime: LocalDateTime
+    val createdAt: LocalDateTime
 ) {
     companion object {
         fun from(course: Course, isBookmarked: Boolean, isSubscribed: Boolean) = CourseListResponse(
             id = course.id!!,
             title = course.title,
             tutor = course.tutor.nickname,
-            category = course.category.name,
+//            category = course.category.name,
             description = course.description,
             imageUrl = course.imageUrl,
             viewCount = course.viewCount,
             isBookmarked = isBookmarked,
             isSubscribed = isSubscribed,
-            createdTime = course.createdTime
+            createdAt = course.createdAt
         )
     }
 }
