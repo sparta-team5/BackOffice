@@ -5,5 +5,5 @@ import team5.backoffice.domain.user.model.Tutor
 
 interface TutorRepository : JpaRepository<Tutor, Long> {
     fun existsByEmail(email: String): Boolean
-    fun findByEmail(email: String): Tutor
+    fun findByEmail(email: String): Tutor?
 }
