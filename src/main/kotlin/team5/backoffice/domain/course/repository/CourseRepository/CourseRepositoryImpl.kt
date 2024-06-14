@@ -35,7 +35,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         val builder = BooleanBuilder()
         if (cursor.cursorOrderType == OrderType.createdAt) {
             cursor.cursorTime?.let {
-                builder.and(course.createdAt.before(it))
+                builder.and(course.createdTime.before(it))
             }
         } else if (cursor.cursorOrderType == OrderType.viewCount) {
             cursor.cursorView?.let {
