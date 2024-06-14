@@ -1,10 +1,11 @@
 package team5.backoffice.domain.auth.oauth.service
 
 import org.springframework.stereotype.Service
-import team5.backoffice.domain.auth.jwt.JwtPlugin
+
 import team5.backoffice.domain.auth.oauth.NaverOAuthClient
 import team5.backoffice.domain.user.model.Student
 import team5.backoffice.domain.user.repository.StudentRepository
+import team5.backoffice.infra.security.jwt.JwtPlugin
 
 @Service
 class OAuthService(
@@ -19,7 +20,7 @@ class OAuthService(
     }
 
     fun naverLogin(code: String): String {
-        val accessToken = naverOAuthClient.getAccessToken(code) //accessTOken받아오기
+        val accessToken = naverOAuthClient.getAccessToken(code) //accessToken 받아오기
         val userInfo = naverOAuthClient.getUserInfo(accessToken)
 
         val student = (studentRepository.findByEmail(userInfo.response.email)
@@ -36,6 +37,6 @@ class OAuthService(
             ))
 
         //db에 회원이 있다면 토큰발급
-        return jwtPlugin.generateAccessToken(student.nickname, student.email)
+        return jwtPlugin.generateAccessToken(student.nickname, student.email, "STUDENT")
     }
 }
