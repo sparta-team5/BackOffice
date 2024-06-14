@@ -21,14 +21,26 @@ class Tutor(
 
     @Column(name = "career", nullable = false)
     var career: String,
-//
-//    @Column(name = "prev_passwords", nullable = true)
-//    @ElementCollection(targetClass = String::class)
-//    val prevPasswords: MutableList<String> = mutableListOf(),
+
+    @Column(name = "old_password1", nullable = true)
+    var oldPassword1: String? = null,
+
+    @Column(name = "old_password2", nullable = true)
+    var oldPassword2: String? = null
 ) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun changePassword(newPassword: String) {
+        oldPassword2 = oldPassword1
+        oldPassword1 = password
+        password = newPassword
+    }
+
+    fun isNewPasswordValid(newPassword: String): Boolean {
+        return newPassword != oldPassword1 && newPassword != oldPassword2 && newPassword != password
+    }
 
 }

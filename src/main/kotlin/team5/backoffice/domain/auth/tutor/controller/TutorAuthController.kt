@@ -1,5 +1,6 @@
 package team5.backoffice.domain.auth.tutor.controller
 
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -19,7 +20,7 @@ class TutorAuthController(
 ) {
     @PostMapping("/signup")
     fun signUpTutor(
-        @RequestBody signUpRequest: SignUpRequest
+        @Valid @RequestBody signUpRequest: SignUpRequest
     ): ResponseEntity<TutorResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
@@ -38,13 +39,13 @@ class TutorAuthController(
     @PatchMapping("/change-password")
     @PreAuthorize("hasRole('ROLE_TUTOR')")
     fun changePassword(
-        @RequestBody changePasswordRequest: ChangePasswordRequest,
+        @Valid @RequestBody changePasswordRequest: ChangePasswordRequest,
         authentication: Authentication
-    ): ResponseEntity<Boolean> {
+    ): ResponseEntity<String> {
         val tutorPrincipal = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(tutorService.changeTutorPassword(changePasswordRequest, tutorPrincipal.email))
+            .body(tutorService.changeTutorPassword(changePasswordRequest, tutorPrincipal.id))
 
     }
 }

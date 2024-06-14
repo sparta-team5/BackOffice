@@ -1,5 +1,6 @@
 package team5.backoffice.domain.auth.student.controller
 
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -20,14 +21,14 @@ class StudentAuthController(
 
     @PostMapping("/signup")
     fun signUpStudent(
-        @RequestBody signUpRequest: SignUpRequest
+        @Valid @RequestBody signUpRequest: SignUpRequest
     ): ResponseEntity<StudentResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(studentService.signUpStudent(signUpRequest))
     }
 
-    @PostMapping("/login/student")
+    @PostMapping("/login")
     fun loginStudent(
         @RequestBody loginRequest: LoginRequest
     ): ResponseEntity<String> {
@@ -39,13 +40,13 @@ class StudentAuthController(
     @PatchMapping("/change-password")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     fun changePassword(
-        @RequestBody changePasswordRequest: ChangePasswordRequest,
+        @Valid @RequestBody changePasswordRequest: ChangePasswordRequest,
         authentication: Authentication
-    ): ResponseEntity<Boolean> {
+    ): ResponseEntity<String> {
         val studentPrincipal = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(studentService.changeStudentPassword(changePasswordRequest, studentPrincipal.email))
+            .body(studentService.changeStudentPassword(changePasswordRequest, studentPrincipal.id))
 
     }
 
