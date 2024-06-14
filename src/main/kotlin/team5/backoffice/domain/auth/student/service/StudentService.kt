@@ -24,7 +24,7 @@ class StudentService(
 
     private fun validateStudentLoginEmailFromToken(token: String): Student {
         return jwtPlugin.validateToken(token).let {
-            studentRepository.findByEmail(it)
+            studentRepository.findByEmail(it)!!
         }
     }
 
@@ -45,13 +45,13 @@ class StudentService(
     }
 
     fun loginStudent(loginRequest: LoginRequest): String {
-        val token = studentRepository.findByEmail(loginRequest.email)
-            .let { student ->
-                if (encoder.verifyPassword(loginRequest.password, student.password)) {
-                    jwtPlugin.generateAccessToken("email", student.email)
-                } else throw AuthenticationException("Password is incorrect")
-            }
-        return token
+        val student = studentRepository.findByEmail(loginRequest.email) ?: throw RuntimeException("student not found")
+        if (!encoder.verifyPassword(
+                loginRequest.password,
+                student.password
+            )
+        ) throw AuthenticationException("Password is incorrect")
+        return jwtPlugin.generateAccessToken("email", student.email)
     }
 
     fun changeStudentPassword(request: ChangePasswordRequest): Boolean {
