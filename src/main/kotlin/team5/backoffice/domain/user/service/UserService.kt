@@ -4,6 +4,9 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team5.backoffice.domain.user.dto.*
+import team5.backoffice.domain.user.model.Follow
+import team5.backoffice.domain.user.model.FollowId
+import team5.backoffice.domain.user.repository.FollowRepository
 import team5.backoffice.domain.user.repository.StudentRepository
 import team5.backoffice.domain.user.repository.TutorRepository
 
@@ -11,6 +14,7 @@ import team5.backoffice.domain.user.repository.TutorRepository
 class UserService(
     private val studentRepository: StudentRepository,
     private val tutorRepository: TutorRepository,
+    private val followRepository: FollowRepository
 ) {
     fun getStudentById(studentId: Long): StudentResponse {
         val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")
@@ -20,9 +24,6 @@ class UserService(
     @Transactional
     fun updateStudentById(studentId: Long, request: UpdateStudentRequest): StudentResponse {
         val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")
-        //todo : null이면 예외 던지기
-        //todo : user가져오기
-        //todo : 본인이 아니면 throw IllegalAccessException
         student.apply {
             this.nickname = request.nickname
         }
@@ -31,16 +32,9 @@ class UserService(
 
     fun deleteStudentById(studentId: Long) {
         val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")
-        //todo : null이면 예외 던지기
-        //todo : 토큰에서 user가져오기
-        //todo : 본인이 아니면 throw IllegalAccessException
         studentRepository.delete(student)
     }
 
-    //todo : admin auth ?
-//    fun createTutor(){
-//
-//    }
 
     fun getTutorById(tutorId: Long): TutorResponse {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
@@ -49,9 +43,7 @@ class UserService(
 
     fun updateTutorById(tutorId: Long, request: UpdateTutorRequest): TutorResponse {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
-        //todo : null이면 예외 던지기
-        //todo : 토큰에서 user가져오기
-        //todo : 본인이 아니면 throw IllegalAccessException
+
         tutor.apply {
             nickname = request.nickname
             description = request.description
@@ -62,25 +54,28 @@ class UserService(
 
     fun deleteTutorById(tutorId: Long) {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
-        //todo : null이면 예외 던지기
-
-        //todo : 토큰에서 user가져오기
-        //todo : 본인이 아니면 throw IllegalAccessException
         tutorRepository.delete(tutor)
     }
 
-    //todo
-    fun followStudentAndUser(tutorId: Long): FollowResponse {
+    fun followStudentAndTutor(tutorId: Long, studentId: Long): FollowResponse {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
-        //todo : follow 요청한 Userid 토큰에서 가져오기
-        TODO()
+        if (followRepository.existsById(
+                FollowId(
+                    studentId,
+                    tutor.id!!
+                )
+            )
+        ) throw IllegalStateException("already followed")
+        return followRepository.save(Follow(FollowId(studentId, tutor.id!!)))
+            .let { FollowResponse.from(it) }
 
     }
 
-    fun unfollowStudentAndUser(tutorId: Long) {
+    fun unfollowStudentAndTutor(tutorId: Long, studentId: Long) {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
-        //todo : unfollow 요청한 Userid 토큰에서 가져오기
-
+        val follow = followRepository.findByIdOrNull(FollowId(studentId, tutor.id!!))
+            ?: throw RuntimeException("Follow not found")
+        followRepository.delete(follow)
     }
 
 }
