@@ -3,7 +3,9 @@ package team5.backoffice.domain.lecture.service
 import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import team5.backoffice.domain.course.model.SubscriptionId
 import team5.backoffice.domain.course.repository.CourseRepository
+import team5.backoffice.domain.course.repository.SubscriptionRepository
 import team5.backoffice.domain.lecture.dto.CreateLectureRequest
 import team5.backoffice.domain.lecture.dto.LectureResponse
 import team5.backoffice.domain.lecture.dto.UpdateLectureRequest
@@ -14,9 +16,17 @@ import team5.backoffice.domain.lecture.repository.LectureRepository
 class LectureService(
     private val lectureRepository: LectureRepository,
     private val courseRepository: CourseRepository,
+    private val subscriptionRepository: SubscriptionRepository,
 ) {
-    fun getLecture(courseId: Long, lectureId: Long): LectureResponse {
-        // TODO 해당 lecture가 연관된 course에 등록된 사용자인지 확인절차 필요
+    fun getLecture(courseId: Long, lectureId: Long, studentId: Long): LectureResponse {
+        courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("course not found")
+        if (!subscriptionRepository.existsById(
+                SubscriptionId(
+                    courseId,
+                    studentId
+                )
+            )
+        ) throw RuntimeException("Subscription not found")
         val lecture = lectureRepository.findByIdAndCourseId(lectureId, courseId) ?: throw RuntimeException()
         return LectureResponse.from(lecture)
     }
