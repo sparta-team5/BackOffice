@@ -2,6 +2,7 @@ package team5.backoffice.domain.course.model
 
 import team5.backoffice.domain.user.model.Tutor
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "course")
@@ -27,10 +28,10 @@ class Course(
     @Column(name = "view_count", nullable = false)
     var viewCount: Long,
 
-//    @Column(name = "created_at", nullable = false)
-//    val createdAt: LocalDateTime,
+    @Column(name = "created_at", nullable = false)
+    val createdTime: LocalDateTime,
 
-) {
+    ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null

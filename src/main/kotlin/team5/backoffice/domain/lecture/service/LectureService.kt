@@ -3,7 +3,7 @@ package team5.backoffice.domain.lecture.service
 import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import team5.backoffice.domain.course.repository.CourseRepository
+import team5.backoffice.domain.course.repository.CourseRepository.CourseRepository
 import team5.backoffice.domain.lecture.dto.CreateLectureRequest
 import team5.backoffice.domain.lecture.dto.LectureResponse
 import team5.backoffice.domain.lecture.dto.UpdateLectureRequest

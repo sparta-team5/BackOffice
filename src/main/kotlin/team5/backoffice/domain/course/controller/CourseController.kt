@@ -1,5 +1,6 @@
 package team5.backoffice.domain.course.controller
 
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -15,11 +16,12 @@ class CourseController(
     @GetMapping()
     fun getAllCourses(
         @ModelAttribute cursor: CursorRequest,
+        pageable: Pageable
     ): ResponseEntity<CursorPageResponse> {
         // val studentId : Long? = 있으면 받고 없으면 null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getAllCourses(cursor, 1L)) //TODO(need to be changed after security implemented)
+            .body(courseService.getAllCourses(cursor, pageable, 1L)) //TODO(need to be changed after security implemented)
     }
 
     @GetMapping("/{courseId}")

@@ -2,7 +2,7 @@ package team5.backoffice.domain.review.service
 
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import team5.backoffice.domain.course.repository.CourseRepository
+import team5.backoffice.domain.course.repository.CourseRepository.CourseRepository
 import team5.backoffice.domain.review.dto.ReviewRequest
 import team5.backoffice.domain.review.dto.ReviewResponse
 import team5.backoffice.domain.review.model.Review

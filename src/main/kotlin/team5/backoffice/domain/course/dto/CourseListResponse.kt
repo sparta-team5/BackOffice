@@ -1,6 +1,7 @@
 package team5.backoffice.domain.course.dto
 
 import team5.backoffice.domain.course.model.Course
+import java.time.LocalDateTime
 
 data class CourseListResponse(
     val id: Long,
@@ -11,7 +12,8 @@ data class CourseListResponse(
     val category: String,
     val isBookmarked: Boolean = false,
     val isSubscribed: Boolean = false,
-    val viewCount: Long
+    val viewCount: Long,
+    val createdTime: LocalDateTime
 ) {
     companion object {
         fun from(course: Course, isBookmarked: Boolean, isSubscribed: Boolean) = CourseListResponse(
@@ -23,7 +25,8 @@ data class CourseListResponse(
             imageUrl = course.imageUrl,
             viewCount = course.viewCount,
             isBookmarked = isBookmarked,
-            isSubscribed = isSubscribed
+            isSubscribed = isSubscribed,
+            createdTime = course.createdTime
         )
     }
 }
