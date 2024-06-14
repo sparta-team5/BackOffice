@@ -11,6 +11,8 @@ import team5.backoffice.domain.course.repository.BookmarkRepository
 import team5.backoffice.domain.course.repository.CategoryRepository
 import team5.backoffice.domain.course.repository.CourseRepository
 import team5.backoffice.domain.course.repository.SubscriptionRepository
+import team5.backoffice.domain.exception.ModelNotFoundException
+import team5.backoffice.domain.exception.UnauthorizedUserException
 import team5.backoffice.domain.user.repository.StudentRepository
 import team5.backoffice.domain.user.repository.TutorRepository
 
@@ -33,7 +35,8 @@ class CourseService(
     }
 
     fun getCourseById(courseId: Long, studentId: Long?): CourseResponse {
-        val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
+        val course =
+            courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
         course.increaseViewCount()
         return if (studentId != null) {
             CourseResponse.from(course, isBookmarkExists(courseId, studentId), isSubscribeExists(courseId, studentId))
@@ -52,8 +55,11 @@ class CourseService(
 //    }
 
     fun createCourse(request: CourseRequest, tutorId: Long): CourseSimpleResponse {
-        val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
-        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tid not found")
+        val category = categoryRepository.findByName(request.category) ?: throw ModelNotFoundException(
+            "category",
+            "name: ${request.category}"
+        )
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("tutor", "id: $tutorId")
         return courseRepository.save(
             Course(
                 title = request.title,
@@ -68,9 +74,13 @@ class CourseService(
 
     @Transactional
     fun updateCourseById(courseId: Long, request: CourseRequest, tutorId: Long): CourseSimpleResponse {
-        val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
-        val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
-        if (course.tutor.id != tutorId) throw RuntimeException("Unauthorized tutor")
+        val course =
+            courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
+        val category = categoryRepository.findByName(request.category) ?: throw ModelNotFoundException(
+            "category",
+            "name: ${request.category}"
+        )
+        if (course.tutor.id != tutorId) throw UnauthorizedUserException()
         course.apply {
             this.title = request.title
             this.description = request.description
@@ -81,30 +91,31 @@ class CourseService(
     }
 
     fun deleteCourseById(courseId: Long, tutorId: Long) {
-        val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
-        if (course.tutor.id != tutorId) throw RuntimeException("Unauthorized tutor")
+        val course =
+            courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
+        if (course.tutor.id != tutorId) throw UnauthorizedUserException()
         courseRepository.delete(course)
     }
 
     fun addBookmark(courseId: Long, studentId: Long) {
-        courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
-        studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student not found")
+        courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
+        studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
         if (!isBookmarkExists(courseId, studentId)) {
             bookmarkRepository.save(Bookmark(BookmarkId(courseId, studentId)))
         }
     }
 
     fun removeBookmark(courseId: Long, studentId: Long) {
-        courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
-        studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student not found")
+        courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
+        studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
         val bookmark = bookmarkRepository.findByIdOrNull(BookmarkId(courseId, studentId))
-            ?: throw RuntimeException("Bookmark not found")
+            ?: throw ModelNotFoundException("bookmark", "id")
         bookmarkRepository.delete(bookmark)
     }
 
     fun subscribe(courseId: Long, studentId: Long) {
-        courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
-        studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student not found")
+        courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
+        studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
         if (!isSubscribeExists(courseId, studentId)) {
             subscriptionRepository.save(Subscription(SubscriptionId(courseId, studentId)))
         }

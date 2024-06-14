@@ -3,6 +3,7 @@ package team5.backoffice.domain.user.service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import team5.backoffice.domain.exception.ModelNotFoundException
 import team5.backoffice.domain.user.dto.*
 import team5.backoffice.domain.user.model.Follow
 import team5.backoffice.domain.user.model.FollowId
@@ -17,13 +18,15 @@ class UserService(
     private val followRepository: FollowRepository
 ) {
     fun getStudentById(studentId: Long): StudentResponse {
-        val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")
+        val student =
+            studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
         return StudentResponse.from(student)
     }
 
     @Transactional
     fun updateStudentById(studentId: Long, request: UpdateStudentRequest): StudentResponse {
-        val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")
+        val student =
+            studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
         student.apply {
             this.nickname = request.nickname
         }
@@ -31,18 +34,19 @@ class UserService(
     }
 
     fun deleteStudentById(studentId: Long) {
-        val student = studentRepository.findByIdOrNull(studentId) ?: throw RuntimeException("Student")
+        val student =
+            studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
         studentRepository.delete(student)
     }
 
 
     fun getTutorById(tutorId: Long): TutorResponse {
-        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("tutor", "id: $tutorId")
         return TutorResponse.from(tutor)
     }
 
     fun updateTutorById(tutorId: Long, request: UpdateTutorRequest): TutorResponse {
-        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("tutor", "id: $tutorId")
 
         tutor.apply {
             nickname = request.nickname
@@ -53,12 +57,12 @@ class UserService(
     }
 
     fun deleteTutorById(tutorId: Long) {
-        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("tutor", "id: $tutorId")
         tutorRepository.delete(tutor)
     }
 
     fun followStudentAndTutor(tutorId: Long, studentId: Long): FollowResponse {
-        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("tutor", "id: $tutorId")
         if (followRepository.existsById(
                 FollowId(
                     studentId,
@@ -72,9 +76,9 @@ class UserService(
     }
 
     fun unfollowStudentAndTutor(tutorId: Long, studentId: Long) {
-        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tutor")
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("tutor", "id: $tutorId")
         val follow = followRepository.findByIdOrNull(FollowId(studentId, tutor.id!!))
-            ?: throw RuntimeException("Follow not found")
+            ?: throw ModelNotFoundException("follow", "tutor id: $tutorId, studentId: $studentId")
         followRepository.delete(follow)
     }
 
