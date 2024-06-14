@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import team5.backoffice.infra.security.jwt.JwtAuthenticationFilter
+import team5.backoffice.infra.swagger.SwaggerConfig
 
 @Configuration
 @EnableWebSecurity
@@ -14,7 +15,7 @@ class SecurityConfig(
     private val jwtAuthenticationFilter: JwtAuthenticationFilter
 ) {
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    fun filterChain(http: HttpSecurity, swaggerConfig: SwaggerConfig): SecurityFilterChain {
         return http
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
@@ -23,6 +24,7 @@ class SecurityConfig(
                 it.requestMatchers(
                     "/login",
                     "/signup",
+                    "/swagger-ui/**"
                 ).permitAll().anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
