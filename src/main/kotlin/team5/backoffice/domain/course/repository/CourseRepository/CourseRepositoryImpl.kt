@@ -47,7 +47,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
 
     private fun JPAQuery<Course>.applyOrderBy(cursor: CursorRequest): JPAQuery<Course> {
         return when (cursor.cursorOrderType) {
-            OrderType.createdAt -> this.orderBy(course.createdAt.desc())
+            OrderType.createdAt -> this.orderBy(course.createdTime.desc())
             OrderType.viewCount -> this.orderBy(course.viewCount.desc())
         }
     }
