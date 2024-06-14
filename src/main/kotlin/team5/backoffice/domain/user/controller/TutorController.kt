@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import team5.backoffice.domain.review.dto.ReviewResponse
 import team5.backoffice.domain.review.service.ReviewService
+import team5.backoffice.domain.user.dto.FollowResponse
 import team5.backoffice.domain.user.dto.TutorResponse
 import team5.backoffice.domain.user.dto.UpdateTutorRequest
 import team5.backoffice.domain.user.service.UserService
@@ -71,25 +72,30 @@ class TutorController(
             .status(HttpStatus.OK)
             .body(reviewService.getAllReviewsByTutor(tutorId))
     }
-}
 
-//todo
-//    @PostMapping("/{tutorId}/follow")
-//    fun followTutor(
-//        @PathVariable tutorId :Long,
-//    ): ResponseEntity<TutorResponseDto>{
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(userService.followStudentAndUser(tutorId))
-//    }
-//
-//    @DeleteMapping("/{tutorId}/follow")
-//    fun unfollowTutor(
-//        @PathVariable tutorId :Long,
-//    ):ResponseEntity<TutorResponseDto>{
-//        return  ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(userService.unfollowStudentAndUser(tutorId))
-//
-//
-//}
+
+    @PostMapping("/{tutorId}/follow")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    fun followTutor(
+        @PathVariable tutorId: Long,
+        authentication: Authentication
+    ): ResponseEntity<FollowResponse> {
+        val student = authentication.principal as UserPrincipal
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.followStudentAndTutor(tutorId, student.id))
+    }
+
+
+    @DeleteMapping("/{tutorId}/follow")
+    fun unfollowTutor(
+        @PathVariable tutorId: Long,
+        authentication: Authentication
+    ): ResponseEntity<Unit> {
+        val student = authentication.principal as UserPrincipal
+        userService.unfollowStudentAndTutor(tutorId, student.id)
+        return ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .build()
+    }
+}
