@@ -22,11 +22,13 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers(
-                    "/login",
-                    "/signup",
+                    "/auth/tutor/login",
+                    "/auth/tutor/signup",
+                    "/auth/student/login",
+                    "/auth/student/signup",
                     "/swagger-ui/**",
-                    "/",
-                    "/v3/api-docs/**"
+                    "/v3/api-docs/**",
+                    "/"
                 ).permitAll().anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

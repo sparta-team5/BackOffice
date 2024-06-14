@@ -37,7 +37,11 @@ class StudentService(
         val token = studentRepository.findByEmail(loginRequest.email)
             .let { student ->
                 if (passwordEncoder.matches(loginRequest.password, student.password)) {
-                    jwtPlugin.generateAccessToken("email", student.email, "STUDENT")
+                    jwtPlugin.generateAccessToken(
+                        subject = student.id.toString(),
+                        email = student.email,
+                        role = "STUDENT"
+                    )
                 } else throw AuthenticationException("Password is incorrect")
             }
         return token

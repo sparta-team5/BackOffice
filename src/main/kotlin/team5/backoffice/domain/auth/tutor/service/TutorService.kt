@@ -37,7 +37,7 @@ class TutorService(
         val token = tutorRepository.findByEmail(loginRequest.email)
             .let { tutor ->
                 if (passwordEncoder.matches(loginRequest.password, tutor.password)) {
-                    jwtPlugin.generateAccessToken("email", tutor.email, "TUTOR")
+                    jwtPlugin.generateAccessToken(subject = tutor.id.toString(), email = tutor.email, role = "TUTOR")
                 } else throw AuthenticationException("Password is incorrect")
             }
         return token
