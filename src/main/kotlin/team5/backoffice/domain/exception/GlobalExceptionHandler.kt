@@ -34,4 +34,14 @@ class GlobalExceptionHandler {
     fun handleInvalidCredentialException(e: UnauthorizedUserException): ResponseEntity<ErrorResponse> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
     }
+
+    @ExceptionHandler(PasswordIncorrectException::class)
+    fun handleInvalidCredentialException(e: PasswordIncorrectException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(RecentlyUsedPasswordException::class)
+    fun handleInvalidCredentialException(e: RecentlyUsedPasswordException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
+    }
 }
