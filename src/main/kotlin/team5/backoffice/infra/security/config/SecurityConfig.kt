@@ -24,7 +24,9 @@ class SecurityConfig(
                 it.requestMatchers(
                     "/login",
                     "/signup",
-                    "/swagger-ui/**"
+                    "/swagger-ui/**",
+                    "/",
+                    "/v3/api-docs/**"
                 ).permitAll().anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

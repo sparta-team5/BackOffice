@@ -1,10 +1,8 @@
 package team5.backoffice.domain.auth.tutor.service
 
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import team5.backoffice.domain.auth.dto.ChangePasswordRequest
-import team5.backoffice.domain.auth.dto.GetUserInfoRequest
 import team5.backoffice.domain.auth.dto.LoginRequest
 import team5.backoffice.domain.auth.dto.SignUpRequest
 import team5.backoffice.domain.user.dto.TutorResponse
@@ -19,17 +17,6 @@ class TutorService(
     private val jwtPlugin: JwtPlugin,
     private val passwordEncoder: PasswordEncoder,
 ) {
-    fun getTutorInfo(request: GetUserInfoRequest): Tutor {
-        return validateTutorLoginEmailFromToken(request.token)
-    }
-
-    private fun validateTutorLoginEmailFromToken(token: String): Tutor {
-        return jwtPlugin.validateToken(token).getOrNull()?.let {
-            val email = it.body["email"] as String
-            tutorRepository.findByEmail(email)
-        } ?: throw AuthenticationException("Invalid token")
-    }
-
     fun signUpTutor(signUpRequest: SignUpRequest): TutorResponse {
         if (tutorRepository.existsByEmail(signUpRequest.email)) {
             throw Exception("이미 존재하는 회원")
@@ -50,22 +37,19 @@ class TutorService(
         val token = tutorRepository.findByEmail(loginRequest.email)
             .let { tutor ->
                 if (passwordEncoder.matches(loginRequest.password, tutor.password)) {
-                    jwtPlugin.generateAccessToken("email", tutor.email, "email")
+                    jwtPlugin.generateAccessToken("email", tutor.email, "TUTOR")
                 } else throw AuthenticationException("Password is incorrect")
             }
         return token
     }
 
-    @PreAuthorize("hasRole('ROLE_TUTOR')")
-    fun changeTutorPassword(request: ChangePasswordRequest): Boolean {
-        validateTutorLoginEmailFromToken(request.user.token)
-            .let {
-                if (passwordEncoder.matches(request.password, it.password)) {
-                    if (passwordEncoder.matches(request.newPassword, it.password)) {
-                        it.password = passwordEncoder.encode(request.newPassword)
-                    } else throw AuthenticationException("Password not changed")
-                } else throw AuthenticationException("Password is incorrect")
-            }
+    fun changeTutorPassword(request: ChangePasswordRequest, tutorEmail: String): Boolean {
+        val tutor = tutorRepository.findByEmail(tutorEmail)
+        if (passwordEncoder.matches(request.password, tutor.password)) {
+            if (passwordEncoder.matches(request.newPassword, tutor.password)) {
+                tutor.password = passwordEncoder.encode(request.newPassword)
+            } else throw AuthenticationException("Password not changed")
+        } else throw AuthenticationException("Password is incorrect")
         return true
     }
 }

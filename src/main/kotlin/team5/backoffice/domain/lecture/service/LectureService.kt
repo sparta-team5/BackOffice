@@ -2,7 +2,6 @@ package team5.backoffice.domain.lecture.service
 
 import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import team5.backoffice.domain.course.repository.CourseRepository
 import team5.backoffice.domain.lecture.dto.CreateLectureRequest
@@ -22,10 +21,9 @@ class LectureService(
         return LectureResponse.from(lecture)
     }
 
-    @PreAuthorize("hasRole('ROLE_TUTOR')")
-    fun addLecture(courseId: Long, request: CreateLectureRequest): LectureResponse {
+    fun addLecture(courseId: Long, request: CreateLectureRequest, tutorId: Long): LectureResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
-        // TODO( 요청한 사람이 course 주인인지 확인하기)
+        if (course.tutor.id != tutorId) throw RuntimeException()
         return Lecture(
             title = request.title,
             videoUrl = request.videoUrl,
@@ -34,11 +32,11 @@ class LectureService(
             .let { LectureResponse.from(it) }
     }
 
-    @PreAuthorize("hasRole('ROLE_TUTOR')")
     @Transactional
-    fun updateLecture(courseId: Long, lectureId: Long, request: UpdateLectureRequest): LectureResponse {
+    fun updateLecture(courseId: Long, lectureId: Long, request: UpdateLectureRequest, tutorId: Long): LectureResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
         val lecture = lectureRepository.findByIdAndCourseId(lectureId, courseId) ?: throw RuntimeException()
+        if (course.tutor.id != tutorId) throw RuntimeException()
         lecture.apply {
             this.title = request.title
             this.videoUrl = request.videoUrl
@@ -48,9 +46,9 @@ class LectureService(
 
     }
 
-    @PreAuthorize("hasRole('ROLE_TUTOR')")
-    fun deleteLecture(courseId: Long, lectureId: Long): Unit {
-        // TODO( 요청한 사람이 course 주인인지 확인하기)
+    fun deleteLecture(courseId: Long, lectureId: Long, tutorId: Long): Unit {
+        val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException()
+        if (course.tutor.id != tutorId) throw RuntimeException()
         val lecture = lectureRepository.findByIdAndCourseId(lectureId, courseId) ?: throw RuntimeException()
         lectureRepository.delete(lecture)
     }

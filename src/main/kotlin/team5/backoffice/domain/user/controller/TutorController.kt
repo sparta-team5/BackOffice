@@ -1,13 +1,16 @@
 package team5.backoffice.domain.user.controller
 
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.Authentication
+import org.springframework.web.bind.annotation.*
 import team5.backoffice.domain.review.dto.ReviewResponse
 import team5.backoffice.domain.review.service.ReviewService
 import team5.backoffice.domain.user.dto.TutorResponse
 import team5.backoffice.domain.user.dto.UpdateTutorRequest
 import team5.backoffice.domain.user.service.UserService
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import team5.backoffice.infra.security.UserPrincipal
 
 @RestController
 @RequestMapping("/tutors")
@@ -27,6 +30,7 @@ class TutorController(
 //    }
 
     @GetMapping("/{tutorId}")
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     fun getTutorDetail(@PathVariable tutorId: Long): ResponseEntity<TutorResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -34,21 +38,31 @@ class TutorController(
     }
 
     @PutMapping("/{tutorId}")
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
     fun updateTutor(
         @PathVariable tutorId: Long,
-        @RequestBody updateTutorRequest: UpdateTutorRequest
+        @RequestBody updateTutorRequest: UpdateTutorRequest,
+        authentication: Authentication
     ): ResponseEntity<TutorResponse> {
-        return ResponseEntity
-            .status(HttpStatus.OK)
-            .body(userService.updateTutorById(tutorId, updateTutorRequest))
+        val tutor = authentication.principal as UserPrincipal
+        if (tutorId == tutor.id) {
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userService.updateTutorById(tutor.id, updateTutorRequest))
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
     }
 
     @DeleteMapping("/{tutorId}")
-    fun deleteTutor(@PathVariable tutorId: Long): ResponseEntity<Unit> {
-        return ResponseEntity
-            .status(HttpStatus.NO_CONTENT)
-            .body(userService.deleteTutorById(tutorId))
-
+    @PreAuthorize("hasRole('ROLE_TUTOR')")
+    fun deleteTutor(@PathVariable tutorId: Long, authentication: Authentication): ResponseEntity<Unit> {
+        val tutor = authentication.principal as UserPrincipal
+        if (tutorId == tutor.id) {
+            return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(userService.deleteTutorById(tutor.id))
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
     }
 
     @GetMapping("/{tutorId}/reviews")

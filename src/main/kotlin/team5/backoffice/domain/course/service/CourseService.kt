@@ -3,7 +3,6 @@ package team5.backoffice.domain.course.service
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Slice
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import team5.backoffice.domain.course.dto.*
@@ -52,10 +51,9 @@ class CourseService(
 //        return CursorPageResponse(pageResponse, nextCursor)
 //    }
 
-    @PreAuthorize("hasRole('ROLE_TUTOR')")
-    fun createCourse(request: CourseRequest): CourseSimpleResponse {
+    fun createCourse(request: CourseRequest, tutorId: Long): CourseSimpleResponse {
         val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
-        val tutor = tutorRepository.findByIdOrNull(request.tutorId) ?: throw RuntimeException("Tid not found")
+        val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw RuntimeException("Tid not found")
         return courseRepository.save(
             Course(
                 title = request.title,
@@ -68,12 +66,11 @@ class CourseService(
         ).let { CourseSimpleResponse.from(it) }
     }
 
-    @PreAuthorize("hasRole('ROLE_TUTOR')")
     @Transactional
-    fun updateCourseById(courseId: Long, request: CourseRequest): CourseSimpleResponse {
+    fun updateCourseById(courseId: Long, request: CourseRequest, tutorId: Long): CourseSimpleResponse {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
         val category = categoryRepository.findByName(request.category) ?: throw RuntimeException("Category not found")
-        if (course.tutor.id != request.tutorId) throw RuntimeException("Unauthorized tutor")
+        if (course.tutor.id != tutorId) throw RuntimeException("Unauthorized tutor")
         course.apply {
             this.title = request.title
             this.description = request.description
@@ -83,9 +80,9 @@ class CourseService(
         return CourseSimpleResponse.from(course)
     }
 
-    @PreAuthorize("hasRole('ROLE_TUTOR')")
-    fun deleteCourseById(courseId: Long) {
+    fun deleteCourseById(courseId: Long, tutorId: Long) {
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
+        if (course.tutor.id != tutorId) throw RuntimeException("Unauthorized tutor")
         courseRepository.delete(course)
     }
 
