@@ -1,8 +1,8 @@
 package team5.backoffice.domain.review.model
 
+import jakarta.persistence.*
 import team5.backoffice.domain.course.model.Course
 import team5.backoffice.domain.user.model.Student
-import jakarta.persistence.*
 import java.time.LocalDateTime
 
 

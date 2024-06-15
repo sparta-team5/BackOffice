@@ -1,6 +1,7 @@
 package team5.backoffice.domain.course.repository.CourseRepository
 
 import com.querydsl.core.BooleanBuilder
+import com.querydsl.core.Tuple
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQuery
 import org.springframework.data.domain.Pageable
@@ -11,8 +12,6 @@ import team5.backoffice.domain.review.model.QReview
 import team5.backoffice.domain.user.model.*
 import team5.backoffice.domain.user.model.QTutor.tutor
 import team5.backoffice.infra.querydsl.QueryDslSupport
-import java.time.Duration
-import java.time.LocalDateTime
 
 @Repository
 class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
@@ -27,8 +26,33 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
     private val student = QStudent.student
     private val tutor = QTutor.tutor
 
-    override fun findAllCourses(cursor: CursorRequest, pageSize: Int): List<Course> {
-        val query = queryFactory.select(course)
+    override fun getCourseAvgRate(courseId: Long): Double {
+        val query = queryFactory.select(review.rate.avg())
+            .from(course)
+            .join(course, review.course)
+            .where(course.id.eq(courseId))
+            .groupBy(course)
+            .fetchOne()
+        return query ?: 0.0
+    }
+
+    override fun findAllCourses(cursor: CursorRequest, pageSize: Int): List<CourseLowData> {
+        val query = queryFactory.select(
+            Projections.constructor(
+                CourseLowData::class.java,
+                course.id,
+                course.title,
+                course.description,
+                course.tutor,
+                category.name,
+                course.imageUrl,
+                course.createdAt,
+                review.rate.avg(),
+                view.count(),
+                bookmark.count(),
+                subscription.count(),
+            )
+        )
             .from(course)
             .leftJoin(course, view.course)
             .leftJoin(course, review.course)
@@ -172,7 +196,13 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         return query
     }
 
-    fun findMyStudentInfo(tutorId: Long,pageable: Pageable, studentFilter: SomethingFilter, groupType: String, durationFilter: DurationFilter) : List<Student> {
+    fun findMyStudentInfo(
+        tutorId: Long,
+        pageable: Pageable,
+        studentFilter: SomethingFilter,
+        groupType: String,
+        durationFilter: DurationFilter
+    ): List<Student> {
         val builder = BooleanBuilder()
         val student = QStudent.student
 
@@ -190,6 +220,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             .fetch()
         return query
     }
+
     // 데이터별 학생 수를 구하기 위한 groupBy 지정 함수 이 함수 사용시 student.count()가 반드시 필요함
     private fun <T> JPAQuery<T>.applyGroupBy(groupType: String): JPAQuery<T> {
         return when (groupType) {
@@ -199,17 +230,19 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             else -> throw RuntimeException("Illegal group type: $groupType")
         }
     }
+
     //나를 팔로우한 학생이 내 코스를 얼마나 구독했는가
-    fun findMyStudentWhoSubscribeTutor(tutor: Tutor) {
+    fun findMyStudentWhoSubscribeTutor(tutor: Tutor): List<Tuple> {
 
 
-        val query = queryFactory.select(student.count())
+        val query = queryFactory.select(student, student.count())
             .from(student)
             .join(student, follow.student)
             .join(student, subscription.student)
             .where(follow.tutor.eq(tutor))
-            .applyGroupBy(groupType) // 학생별로 몇개의 코스를 구독했는가, 이부분이 없다면 그냥 전체학생이 구독 몇개나 했는가
+            .groupBy(student) // 학생별로 몇개의 코스를 구독했는가
             .fetch()
+        return query
     }
 
     // 아직 student 에 필드가 없어 단순 객체 반환으로 구현해 봤습니다.

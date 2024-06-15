@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import team5.backoffice.domain.course.repository.CourseRepository.CourseRepository
-import team5.backoffice.domain.course.repository.CourseRepository
 import team5.backoffice.domain.exception.ModelNotFoundException
 import team5.backoffice.domain.exception.UnauthorizedUserException
 import team5.backoffice.domain.review.dto.ReviewRequest
@@ -13,6 +12,7 @@ import team5.backoffice.domain.review.model.Review
 import team5.backoffice.domain.review.repository.ReviewRepository
 import team5.backoffice.domain.user.repository.StudentRepository
 import team5.backoffice.domain.user.repository.TutorRepository
+import java.time.LocalDateTime
 
 @Service
 class ReviewService(
@@ -32,6 +32,7 @@ class ReviewService(
             student = student,
             body = request.body,
             rate = request.rate,
+            createdAt = LocalDateTime.now()
         ).let { reviewRepository.save(it) }
             .let { ReviewResponse.from(it) }
     }

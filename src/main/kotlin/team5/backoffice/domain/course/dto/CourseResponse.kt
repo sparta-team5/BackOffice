@@ -1,8 +1,6 @@
 package team5.backoffice.domain.course.dto
 
 import team5.backoffice.domain.course.model.Course
-import team5.backoffice.domain.lecture.dto.LectureResponse
-import team5.backoffice.domain.review.dto.ReviewResponse
 import java.time.LocalDateTime
 
 

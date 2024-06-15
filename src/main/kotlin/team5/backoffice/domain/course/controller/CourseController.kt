@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import team5.backoffice.domain.course.dto.*
-import team5.backoffice.domain.course.model.PageRequest
 import team5.backoffice.domain.course.service.CourseService
 
 @RestController
