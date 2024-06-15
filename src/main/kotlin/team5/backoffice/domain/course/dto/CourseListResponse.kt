@@ -17,7 +17,7 @@ data class CourseListResponse(
 ) {
     companion object {
         fun from(course: CourseLowData, isBookmarked: Boolean, isSubscribed: Boolean, rate: Double) = CourseListResponse(
-            id = course.id!!,
+            id = course.id,
             title = course.title,
             tutor = course.tutor.nickname,
             category = course.categoryName,

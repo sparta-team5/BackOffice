@@ -115,19 +115,20 @@ class CourseService(
             if (course.tutor.id != tutorId) throw UnauthorizedUserException()
             courseRepository.delete(course)
         }
+    }
 
-        @Transactional
-        fun addBookmark(courseId: Long, studentId: Long) {
-            courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
-            studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException(
-                "student",
-                "id: $studentId"
-            )
-            if (!isBookmarkExists(courseId, studentId)) {
-                bookmarkRepository.save(Bookmark(BookmarkId(courseId, studentId), LocalDateTime.now()))
-            }
+    @Transactional
+    fun addBookmark(courseId: Long, studentId: Long) {
+        courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
+        studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException(
+            "student",
+            "id: $studentId"
+        )
+        if (!isBookmarkExists(courseId, studentId)) {
+            bookmarkRepository.save(Bookmark(BookmarkId(courseId, studentId), LocalDateTime.now()))
         }
     }
+
 
     @Transactional
     fun removeBookmark(courseId: Long, studentId: Long) {
