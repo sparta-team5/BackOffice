@@ -27,13 +27,21 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
     private val tutor = QTutor.tutor
 
     override fun getCourseAvgRate(courseId: Long): Double {
-        val query = queryFactory.select(review.rate.avg())
+        return queryFactory.select(review.rate.avg())
             .from(course)
             .join(course, review.course)
             .where(course.id.eq(courseId))
             .groupBy(course)
+            .fetchOne() ?: 0.0
+    }
+
+    override fun getCourseViewSum(courseId: Long): Long {
+        return queryFactory.select(view.count())
+            .from(course)
+            .join(course, view.courses)
+            .where(course.id.eq(courseId))
+            .groupBy(course)
             .fetchOne()
-        return query ?: 0.0
     }
 
     override fun findAllCourses(cursor: CursorRequest, pageSize: Int): List<CourseLowData> {

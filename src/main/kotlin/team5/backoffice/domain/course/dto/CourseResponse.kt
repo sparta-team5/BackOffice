@@ -19,7 +19,7 @@ data class CourseResponse(
 //    val reviews : List<ReviewResponse>
 ) {
     companion object {
-        fun from(course: Course, isBookMarked: Boolean, isSubscribed: Boolean, rate: Double) = CourseResponse(
+        fun from(course: Course, isBookMarked: Boolean, isSubscribed: Boolean, rate: Double, viewCount: Long) = CourseResponse(
             id = course.id!!,
             title = course.title,
             tutor = course.tutor.nickname,
@@ -27,7 +27,7 @@ data class CourseResponse(
             description = course.description,
             isBookMarked = isBookMarked,
             isSubscribed = isSubscribed,
-            viewCount = course.viewCount,
+            viewCount = viewCount,
             createdAt = course.createdAt,
             rate = rate,
         )

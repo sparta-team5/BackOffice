@@ -48,7 +48,8 @@ class CourseService(
                 course,
                 isBookmarkExists(courseId, studentId),
                 isSubscribeExists(courseId, studentId),
-                getCourseAverageRate(courseId)
+                getCourseAverageRate(courseId),
+                getCourseViewCount(courseId)
             )
         } else {
             CourseResponse.from(course, isBookMarked = false, isSubscribed = false, getCourseAverageRate(courseId))
@@ -181,8 +182,11 @@ class CourseService(
         }
     }
 
-    fun getCourseAverageRate(courseId: Long): Double {
+    private fun getCourseAverageRate(courseId: Long): Double {
         return courseRepository.getCourseAvgRate(courseId)
+    }
+    private fun getCourseViewCount(courseId: Long): Long {
+        return courseRepository.getCourseViewSum(courseId)
     }
 }
 
