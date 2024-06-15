@@ -4,7 +4,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team5.backoffice.domain.auth.dto.GetUserInfoRequest
 import team5.backoffice.domain.auth.tutor.service.TutorService
 import team5.backoffice.domain.course.dto.*
 import team5.backoffice.domain.course.model.*
@@ -12,7 +11,7 @@ import team5.backoffice.domain.course.repository.BookmarkRepository
 import team5.backoffice.domain.course.repository.CategoryRepository
 import team5.backoffice.domain.course.repository.CourseRepository.CourseRepository
 import team5.backoffice.domain.course.repository.SubscriptionRepository
-import team5.backoffice.domain.user.model.Tutor
+import team5.backoffice.domain.review.repository.ReviewRepository
 import team5.backoffice.domain.user.repository.StudentRepository
 import team5.backoffice.domain.user.repository.TutorRepository
 import java.time.LocalDateTime
@@ -26,6 +25,7 @@ class CourseService(
     private val bookmarkRepository: BookmarkRepository,
     private val categoryRepository: CategoryRepository,
     private val tutorRepository: TutorRepository,
+    private val reviewRepository: ReviewRepository,
 ) {
 
     fun getAllCourses(cursor: CursorRequest, pageSize: Int, studentId: Long?): CursorPageResponse {
@@ -41,9 +41,9 @@ class CourseService(
         val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
         course.increaseViewCount()
         return if (studentId != null) {
-            CourseResponse.from(course, isBookmarkExists(courseId, studentId), isSubscribeExists(courseId, studentId))
+            CourseResponse.from(course, isBookmarkExists(courseId, studentId), isSubscribeExists(courseId, studentId), getCourseAverageRate(courseId))
         } else {
-            CourseResponse.from(course, isBookMarked = false, isSubscribed = false)
+            CourseResponse.from(course, isBookMarked = false, isSubscribed = false, getCourseAverageRate(courseId))
         }
     }
 
@@ -61,7 +61,7 @@ class CourseService(
                 title = request.title,
                 tutor = tutor,
                 description = request.description,
-//                category = category,
+                category = request.category,
                 imageUrl = request.imageUrl,
                 viewCount = 0,
                 createdAt = LocalDateTime.now()
@@ -125,13 +125,20 @@ class CourseService(
             CourseListResponse.from(
                 it,
                 isBookmarkExists(it.id!!, studentId),
-                isSubscribeExists(it.id, studentId)
+                isSubscribeExists(it.id, studentId),
+                getCourseAverageRate(it.id)
             )
         }
-        else courses.map { CourseListResponse.from(it, isBookmarked = false, isSubscribed = false) }
+        else courses.map { CourseListResponse.from(it, isBookmarked = false, isSubscribed = false, getCourseAverageRate(it.id!!)) }
 
     }
 
+    //코스별 평균 rate 를 구하는 내부함수
+    private fun getCourseAverageRate(courseId: Long) : Double {
+        val rateSum = reviewRepository.findAllByCourseId(courseId).sumOf { it.rate }
+        val rateCount = reviewRepository.findAllByCourseId(courseId).count()
+        return rateSum.toDouble() / rateCount
+    }
 
 //    fun checkValidate(token: String): Tutor {
 //        return tutorService.getTutorInfo(

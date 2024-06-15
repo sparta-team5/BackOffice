@@ -27,7 +27,7 @@ class StudentAuthController(
             .body(studentService.signUpStudent(signUpRequest))
     }
 
-    @PostMapping("/login/student")
+    @PostMapping("/login")
     fun loginStudent(
         @RequestBody loginRequest: LoginRequest
     ): ResponseEntity<String> {

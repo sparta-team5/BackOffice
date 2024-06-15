@@ -6,14 +6,12 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Table
 import java.time.LocalDateTime
 
-
 @Entity
-@Table(name = "subscription")
-class Subscription(
+@Table(name = "view")
+class View(
     @EmbeddedId
-    val id: SubscriptionId,
+    val id : ViewId,
 
     @Column(name = "created_at")
-    val createdAt: LocalDateTime,
-) {
-}
+    val createdAt : LocalDateTime,
+)
