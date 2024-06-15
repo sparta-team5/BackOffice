@@ -1,6 +1,7 @@
 package team5.backoffice.domain.auth.oauth.service
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 import team5.backoffice.domain.auth.oauth.NaverOAuthClient
 import team5.backoffice.domain.user.model.Student
@@ -19,6 +20,7 @@ class OAuthService(
         return naverOAuthClient.getLoginPageUrl()
     }
 
+    @Transactional
     fun naverLogin(code: String): String {
         val accessToken = naverOAuthClient.getAccessToken(code) //accessToken 받아오기
         val userInfo = naverOAuthClient.getUserInfo(accessToken)

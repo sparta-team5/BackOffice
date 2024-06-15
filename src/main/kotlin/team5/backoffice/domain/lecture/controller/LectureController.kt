@@ -29,10 +29,12 @@ class LectureController(
     fun getLecture(
         @PathVariable courseId: Long,
         @PathVariable lectureId: Long,
+        authentication: Authentication,
     ): ResponseEntity<LectureResponse> {
+        val student = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(lectureService.getLecture(courseId, lectureId))
+            .body(lectureService.getLecture(courseId, lectureId, student.id))
     }
 
     @PostMapping

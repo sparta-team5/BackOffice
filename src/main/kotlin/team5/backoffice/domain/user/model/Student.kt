@@ -21,14 +21,22 @@ class Student(
     @Column(name = "provider_id", nullable = true)
     val providerId: String? = null,
 
-//    @Column(name = "prev_passwords", nullable = true)
-//    @ElementCollection(fetch = FetchType.LAZY)
-//    val prevPasswords: MutableList<String> = mutableListOf(),
+    @Column(name = "old_password1", nullable = true)
+    var oldPassword1: String? = null,
+
+    @Column(name = "old_password2", nullable = true)
+    var oldPassword2: String? = null
 ) {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun changePassword(newPassword: String) {
+        oldPassword2 = oldPassword1
+        oldPassword1 = password
+        password = newPassword
+    }
 
 }
 
