@@ -52,7 +52,7 @@ class CourseService(
                 getCourseViewCount(courseId)
             )
         } else {
-            CourseResponse.from(course, isBookMarked = false, isSubscribed = false, getCourseAverageRate(courseId))
+            CourseResponse.from(course, isBookMarked = false, isSubscribed = false, getCourseAverageRate(courseId), getCourseViewCount(courseId))
         }
     }
 
@@ -169,7 +169,6 @@ class CourseService(
                 it,
                 isBookmarkExists(it.id, studentId),
                 isSubscribeExists(it.id, studentId),
-                getCourseAverageRate(it.id)
             )
         }
         else courses.map {
@@ -177,7 +176,6 @@ class CourseService(
                 it,
                 isBookmarked = false,
                 isSubscribed = false,
-                getCourseAverageRate(it.id!!)
             )
         }
     }
