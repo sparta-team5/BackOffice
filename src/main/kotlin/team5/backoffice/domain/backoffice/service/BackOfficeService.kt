@@ -11,8 +11,6 @@ import team5.backoffice.domain.exception.InvalidCredentialException
 import team5.backoffice.domain.exception.ModelNotFoundException
 import team5.backoffice.domain.user.model.FollowId
 import team5.backoffice.domain.user.repository.FollowRepository
-import team5.backoffice.domain.user.repository.StudentRepository
-import team5.backoffice.domain.user.repository.TutorRepository
 
 @Service
 class BackOfficeService(
