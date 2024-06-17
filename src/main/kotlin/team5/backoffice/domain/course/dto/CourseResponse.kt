@@ -11,7 +11,6 @@ data class CourseResponse(
     val description: String,
     val isBookMarked: Boolean = false,
     val isSubscribed: Boolean = false,
-    val viewCount: Long
 ) {
     companion object {
         fun from(course: Course, isBookMarked: Boolean, isSubscribed: Boolean) = CourseResponse(
@@ -22,7 +21,6 @@ data class CourseResponse(
             description = course.description,
             isBookMarked = isBookMarked,
             isSubscribed = isSubscribed,
-            viewCount = course.viewCount,
         )
     }
 }

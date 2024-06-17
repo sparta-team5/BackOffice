@@ -37,7 +37,6 @@ class CourseService(
     fun getCourseById(courseId: Long, studentId: Long?): CourseResponse {
         val course =
             courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
-        course.increaseViewCount()
         return if (studentId != null) {
             CourseResponse.from(course, isBookmarkExists(courseId, studentId), isSubscribeExists(courseId, studentId))
         } else {
@@ -68,7 +67,6 @@ class CourseService(
                 description = request.description,
                 category = category,
                 imageUrl = request.imageUrl,
-                viewCount = 0,
             )
         ).let { CourseSimpleResponse.from(it) }
     }
