@@ -55,15 +55,15 @@ class CourseController(
         @PathVariable courseId: Long,
         authentication: Authentication
     ): ResponseEntity<CourseResponse> {
-        val studentId: Long? = null
+        val student = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(
                 courseService.getCourseById(
                     courseId,
-                    studentId
+                    student.id
                 )
-            ) //TODO(need to be changed after security implemented)
+            )
     }
 
     @GetMapping("/filter")
