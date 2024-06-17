@@ -21,7 +21,13 @@ class CourseController(
         val studentId: Long? = null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getAllCourses(cursor, pageSize, studentId)) //TODO(need to be changed after security implemented)
+            .body(
+                courseService.getAllCourses(
+                    cursor,
+                    pageSize,
+                    studentId
+                )
+            ) //TODO(need to be changed after security implemented)
     }
 
     @GetMapping("/{courseId}")
@@ -31,7 +37,12 @@ class CourseController(
         val studentId: Long? = null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getCourseById(courseId, studentId)) //TODO(need to be changed after security implemented)
+            .body(
+                courseService.getCourseById(
+                    courseId,
+                    studentId
+                )
+            ) //TODO(need to be changed after security implemented)
     }
 
     @GetMapping("/filter")
