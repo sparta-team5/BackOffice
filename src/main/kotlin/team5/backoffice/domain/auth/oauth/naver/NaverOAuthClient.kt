@@ -22,7 +22,6 @@ class NaverOAuthClient(
     private val restClient: RestClient
 ) : OAuthClient {
 
-    //네이버 로그인 페이지 url을 구성
     override fun getLoginPageUrl(): String {
         return StringBuilder(authServerBaseUrl)
             .append("/oauth2.0/authorize")
@@ -32,7 +31,6 @@ class NaverOAuthClient(
             .toString()
     }
 
-    //로그인 후 인가코드로 accesstoken받아옴
     override fun getAccessToken(code: String): String {
         val requestData = mutableMapOf(
             "grant_type" to "authorization_code",
