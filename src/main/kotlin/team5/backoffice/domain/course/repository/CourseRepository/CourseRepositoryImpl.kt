@@ -116,15 +116,16 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         durationFilter: DurationFilter
     ): List<CourseLowData> {
         val builder = BooleanBuilder()
+        val havingBuilder = BooleanBuilder()
 
         filter.title?.let { builder.and(course.title.like("%$it%")) }
         filter.description?.let { builder.and(course.description.like("%$it%")) }
         filter.tutorNickName?.let { builder.and(course.tutor.nickname.eq(it)) }
         filter.category?.let { builder.and(category.name.eq(it)) }
-        filter.viewCount?.let { builder.and(view.count().goe(it)) }
-        filter.rate?.let { builder.and(review.rate.avg().goe(it)) }
-        filter.bookmarkCount?.let { builder.and(bookmark.count().goe(it)) }
-        filter.subscriptionCount?.let { builder.and(subscription.count().goe(it)) }
+        filter.viewCount?.let { havingBuilder.and(view.count().goe(it)) }
+        filter.rate?.let { havingBuilder.and(review.rate.avg().goe(it)) }
+        filter.bookmarkCount?.let { havingBuilder.and(bookmark.count().goe(it)) }
+        filter.subscriptionCount?.let { havingBuilder.and(subscription.count().goe(it)) }
         durationFilter.duration?.let { builder.and(view.createdAt.after(it)) }
         durationFilter.duration?.let { builder.and(bookmark.createdAt.after(it)) }
         durationFilter.duration?.let { builder.and(subscription.createdAt.after(it)) }
@@ -154,6 +155,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             .leftJoin(subscription).on(course.eq(subscription.course))
             .where(builder)
             .groupBy(course)
+            .having(havingBuilder)
             .applyOrderBy(filter.orderType)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
@@ -207,7 +209,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                 course.tutor.id.eq(tutorId)
                     .and(builder)
             )
-            .applyOrderBy(filter.orderType)
+            .groupBy(course)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .fetch()
