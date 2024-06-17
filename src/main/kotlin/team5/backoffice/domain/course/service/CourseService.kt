@@ -22,12 +22,10 @@ import java.time.LocalDateTime
 class CourseService(
     private val courseRepository: CourseRepository,
     private val studentRepository: StudentRepository,
-    private val tutorService: TutorService,
     private val subscriptionRepository: SubscriptionRepository,
     private val bookmarkRepository: BookmarkRepository,
     private val categoryRepository: CategoryRepository,
     private val tutorRepository: TutorRepository,
-    private val reviewRepository: ReviewRepository,
 ) {
 
     @Transactional
