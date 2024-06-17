@@ -1,7 +1,6 @@
 package team5.backoffice.domain.course.repository.CourseRepository
 
 import com.querydsl.core.BooleanBuilder
-import com.querydsl.core.Tuple
 import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQuery
 import org.springframework.data.domain.Pageable
@@ -9,8 +8,9 @@ import org.springframework.stereotype.Repository
 import team5.backoffice.domain.course.dto.*
 import team5.backoffice.domain.course.model.*
 import team5.backoffice.domain.review.model.QReview
-import team5.backoffice.domain.user.model.*
-import team5.backoffice.domain.user.model.QTutor.tutor
+import team5.backoffice.domain.user.model.QFollow
+import team5.backoffice.domain.user.model.QStudent
+import team5.backoffice.domain.user.model.QTutor
 import team5.backoffice.infra.querydsl.QueryDslSupport
 
 @Repository

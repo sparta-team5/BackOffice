@@ -1,6 +1,5 @@
 package team5.backoffice.domain.course.dto
 
-import team5.backoffice.domain.course.model.Category
 import team5.backoffice.domain.course.model.OrderType
 
 data class FilteringRequest(
