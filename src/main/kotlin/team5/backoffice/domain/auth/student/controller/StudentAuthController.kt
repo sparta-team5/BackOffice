@@ -6,9 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
-import team5.backoffice.domain.auth.dto.ChangePasswordRequest
-import team5.backoffice.domain.auth.dto.LoginRequest
-import team5.backoffice.domain.auth.dto.SignUpRequest
+import team5.backoffice.domain.auth.dto.*
 import team5.backoffice.domain.auth.student.service.StudentService
 import team5.backoffice.domain.user.dto.StudentResponse
 import team5.backoffice.infra.security.UserPrincipal
@@ -31,10 +29,19 @@ class StudentAuthController(
     @PostMapping("/login")
     fun loginStudent(
         @RequestBody loginRequest: LoginRequest
-    ): ResponseEntity<String> {
+    ): ResponseEntity<TokenResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(studentService.loginStudent(loginRequest))
+    }
+
+    @PostMapping("/token")
+    fun regenerateToken(
+        @RequestBody tokenRequest: TokenRequest
+    ): ResponseEntity<TokenResponse> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(studentService.regenerateToken(tokenRequest))
     }
 
     @PatchMapping("/change-password")

@@ -31,17 +31,22 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UnauthorizedUserException::class)
-    fun handleInvalidCredentialException(e: UnauthorizedUserException): ResponseEntity<ErrorResponse> {
+    fun handleUnauthorizedUserException(e: UnauthorizedUserException): ResponseEntity<ErrorResponse> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
     }
 
     @ExceptionHandler(PasswordIncorrectException::class)
-    fun handleInvalidCredentialException(e: PasswordIncorrectException): ResponseEntity<ErrorResponse> {
+    fun handlePasswordIncorrectException(e: PasswordIncorrectException): ResponseEntity<ErrorResponse> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
     }
 
     @ExceptionHandler(RecentlyUsedPasswordException::class)
-    fun handleInvalidCredentialException(e: RecentlyUsedPasswordException): ResponseEntity<ErrorResponse> {
+    fun handleRecentlyUsedPasswordException(e: RecentlyUsedPasswordException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(ModelAlreadyExistsException::class)
+    fun handleModelAlreadyExistsException(e: ModelAlreadyExistsException): ResponseEntity<ErrorResponse> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
     }
 }

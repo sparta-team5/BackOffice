@@ -7,4 +7,5 @@ interface StudentRepository : JpaRepository<Student, Long> {
     fun existsByEmail(email: String): Boolean
     fun findByEmail(email: String): Student?
     fun findByProviderNameAndProviderId(providerName: String, providerId: String): Student?
+    fun findByRefreshToken(refreshToken: String): Student?
 }
