@@ -18,18 +18,20 @@ class CourseController(
         @ModelAttribute cursor: CursorRequest,
         @RequestParam pageSize: Int
     ): ResponseEntity<CursorPageResponse> {
+        val studentId: Long? = null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getAllCourses(cursor, pageSize, 1L)) //TODO(need to be changed after security implemented)
+            .body(courseService.getAllCourses(cursor, pageSize, studentId)) //TODO(need to be changed after security implemented)
     }
 
     @GetMapping("/{courseId}")
     fun getCourseById(
         @PathVariable courseId: Long,
     ): ResponseEntity<CourseResponse> {
+        val studentId: Long? = null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getCourseById(courseId, 1L)) //TODO(need to be changed after security implemented)
+            .body(courseService.getCourseById(courseId, studentId)) //TODO(need to be changed after security implemented)
     }
 
     @GetMapping("/filter")
@@ -38,9 +40,10 @@ class CourseController(
         @ModelAttribute durationFilter: DurationFilter,
         pageable: Pageable
     ): ResponseEntity<List<CourseListResponse>> {
+        val studentId: Long? = null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getFilteredCourses(filter, pageable, 1L, durationFilter))
+            .body(courseService.getFilteredCourses(filter, pageable, studentId, durationFilter))
     }
 
     @PostMapping()

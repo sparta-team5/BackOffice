@@ -62,18 +62,27 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             )
         )
             .from(course)
-            .leftJoin(course, view.course)
-            .leftJoin(course, review.course)
-//            .leftJoin(course, bookmark.course)
-//            .leftJoin(course, subscription.course)
+            .leftJoin(view).on(course.eq(view.course))
+            .leftJoin(review).on(course.eq(review.course))
+            .leftJoin(bookmark).on(course.eq(bookmark.course))
+            .leftJoin(subscription).on(course.eq(subscription.course))
             .where(applyCursorPosition(cursor))
-            .groupBy(course)
+            .groupBy(
+                course.id,
+                course.title,
+                course.description,
+                course.tutor,
+                category.name,
+                course.imageUrl,
+                course.createdAt
+            )
             .applyOrderBy(cursor.cursorOrderType)
             .limit(pageSize.toLong())
             .fetch()
 
         return query
     }
+
 
     private fun applyCursorPosition(cursor: CursorRequest): BooleanBuilder {
         val builder = BooleanBuilder()
@@ -138,10 +147,10 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                 )
             )
             .from(course)
-            .leftJoin(course, review.course)
-            .leftJoin(course, view.course)
-            .leftJoin(course, bookmark.course)
-            .leftJoin(course, subscription.course)
+            .leftJoin(review).on(course.eq(review.course))
+            .leftJoin(view).on(course.eq(view.course))
+            .leftJoin(bookmark).on(course.eq(bookmark.course))
+            .leftJoin(subscription).on(course.eq(subscription.course))
             .where(builder)
             .groupBy(course)
             .applyOrderBy(filter.orderType)
@@ -186,12 +195,12 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                 )
             )
             .from(course)
-            .leftJoin(course.tutor, tutor)
-            .leftJoin(course, review.course)
-            .leftJoin(course, view.course)
-            .leftJoin(course, subscription.course)
-            .leftJoin(course, bookmark.course)
-            .leftJoin(tutor, follow.tutor)
+            .leftJoin(tutor).on(course.tutor.eq(tutor))
+            .leftJoin(review).on(course.eq(review.course))
+            .leftJoin(view).on(course.eq(view.course))
+            .leftJoin(subscription).on(course.eq(subscription.course))
+            .leftJoin(bookmark).on(course.eq(bookmark.course))
+            .leftJoin(follow).on(tutor.eq(follow.tutor))
             .where(
                 course.tutor.id.eq(tutorId)
                     .and(builder)
@@ -240,18 +249,18 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
 //    }
 
     //나를 팔로우한 학생이 내 코스를 얼마나 구독했는가
-    fun findMyStudentWhoSubscribeTutor(tutor: Tutor): List<Tuple> {
-
-
-        val query = queryFactory.select(student, student.count())
-            .from(student)
-            .join(student, follow.student)
-            .join(student, subscription.student)
-            .where(follow.tutor.eq(tutor))
-            .groupBy(student) // 학생별로 몇개의 코스를 구독했는가
-            .fetch()
-        return query
-    }
+//    fun findMyStudentWhoSubscribeTutor(tutorId: Long): List<Tuple> {
+//
+//
+//        val query = queryFactory.select(student, student.count())
+//            .from(student)
+//            .join(follow).on(student.eq(follow.student))
+//            .join(subscription).on(student.eq(subscription.student))
+//            .where(follow.tutor.id.eq(tutorId))
+//            .groupBy(student) // 학생별로 몇개의 코스를 구독했는가
+//            .fetch()
+//        return query
+//    }
 
 //     아직 student 에 필드가 없어 단순 객체 반환으로 구현해 봤습니다.
 //

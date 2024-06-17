@@ -30,6 +30,7 @@ class CourseService(
     private val reviewRepository: ReviewRepository,
 ) {
 
+    @Transactional
     fun getAllCourses(cursor: CursorRequest, pageSize: Int, studentId: Long?): CursorPageResponse {
         val courses = coursesToListResponse(courseRepository.findAllCourses(cursor, pageSize), studentId)
         val nextCursor = when (cursor.cursorOrderType) {
@@ -62,6 +63,7 @@ class CourseService(
         }
     }
 
+    @Transactional
     fun getFilteredCourses(
         filter: FilteringRequest,
         pageable: Pageable,
