@@ -56,12 +56,18 @@ class CourseController(
         val student = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(
-                courseService.getCourseById(
-                    courseId,
-                    student.id
-                )
-            )
+            .body(courseService.getCourseById(courseId, student.id))
+    }
+
+    @GetMapping("/filter/all")
+    fun getFilteredCoursesWithoutAuth(
+        @ModelAttribute filter: FilteringRequest,
+        @ModelAttribute durationFilter: DurationFilter,
+        pageable: Pageable
+    ): ResponseEntity<List<CourseListResponse>> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(courseService.getFilteredCourses(filter, pageable, null, durationFilter))
     }
 
     @GetMapping("/filter")
