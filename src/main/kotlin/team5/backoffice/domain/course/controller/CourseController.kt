@@ -42,12 +42,10 @@ class CourseController(
     @GetMapping("/{courseId}/all")
     fun getCourseByIdWithoutAuth(
         @PathVariable courseId: Long,
-        authentication: Authentication,
     ): ResponseEntity<CourseResponse> {
-        val student = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getCourseById(courseId, student.id))
+            .body(courseService.getCourseById(courseId, null))
     }
 
     @GetMapping("/{courseId}")
