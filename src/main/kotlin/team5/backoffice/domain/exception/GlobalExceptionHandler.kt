@@ -6,6 +6,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import team5.backoffice.domain.exception.dto.ErrorResponse
+import team5.backoffice.domain.exception.oauth.InvalidOAuthUserException
+import team5.backoffice.domain.exception.oauth.OAuthTokenRetrieveException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -47,6 +49,16 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(ModelAlreadyExistsException::class)
     fun handleModelAlreadyExistsException(e: ModelAlreadyExistsException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(InvalidOAuthUserException::class)
+    fun handleInvalidOAuthUserException(e: InvalidOAuthUserException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(OAuthTokenRetrieveException::class)
+    fun handleOAuthTokenRetrieveException(e: OAuthTokenRetrieveException): ResponseEntity<ErrorResponse> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
     }
 }
