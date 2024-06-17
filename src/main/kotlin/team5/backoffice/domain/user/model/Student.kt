@@ -25,7 +25,10 @@ class Student(
     var oldPassword1: String? = null,
 
     @Column(name = "old_password2", nullable = true)
-    var oldPassword2: String? = null
+    var oldPassword2: String? = null,
+
+    @Column(name = "refresh_token", nullable = true)
+    var refreshToken: String? = null
 ) {
 
     @Id

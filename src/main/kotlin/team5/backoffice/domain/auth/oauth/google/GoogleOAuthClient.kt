@@ -11,6 +11,8 @@ import team5.backoffice.domain.auth.oauth.OAuthClient
 import team5.backoffice.domain.auth.oauth.google.dto.GoogleOAuthUserInfo
 import team5.backoffice.domain.auth.oauth.google.dto.GoogleTokenResponse
 import team5.backoffice.domain.auth.oauth.type.OAuthProvider
+import team5.backoffice.domain.exception.oauth.InvalidOAuthUserException
+import team5.backoffice.domain.exception.oauth.OAuthTokenRetrieveException
 
 @Component
 class GoogleOAuthClient(
@@ -41,18 +43,17 @@ class GoogleOAuthClient(
             "redirect_uri" to redirectUrl,
             "code" to authorizationCode,
         )
-        println(authServerTokenUrl)
         return restClient.post()
             .uri(authServerTokenUrl)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .body(LinkedMultiValueMap<String, String>().apply { this.setAll(requestData) })
             .retrieve()
             .onStatus(HttpStatusCode::isError) { _, response ->
-                throw RuntimeException("${response.statusCode} Google AccessToken 조회 실패")
+                throw OAuthTokenRetrieveException("GOOGLE: ${response.statusCode}")
             }
             .body<GoogleTokenResponse>()
             ?.accessToken
-            ?: throw RuntimeException("google AccessToken 조회 실패")
+            ?: throw OAuthTokenRetrieveException("GOOGLE")
 
     }
 
@@ -63,10 +64,10 @@ class GoogleOAuthClient(
             .header("Authorization", "Bearer $accessToken")
             .retrieve()
             .onStatus(HttpStatusCode::isError) { _, response ->
-                throw RuntimeException("${response.statusCode} Google user 조회 실패")
+                throw throw InvalidOAuthUserException("GOOGLE: ${response.statusCode}")
             }
             .body<GoogleOAuthUserInfo>()
-            ?: throw RuntimeException("Google user조회 실패")
+            ?: throw throw InvalidOAuthUserException("GOOGLE")
     }
 
     override fun supports(provider: OAuthProvider): Boolean {

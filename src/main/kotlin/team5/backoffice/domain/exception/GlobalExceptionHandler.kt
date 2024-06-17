@@ -6,6 +6,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import team5.backoffice.domain.exception.dto.ErrorResponse
+import team5.backoffice.domain.exception.oauth.InvalidOAuthUserException
+import team5.backoffice.domain.exception.oauth.OAuthTokenRetrieveException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -31,17 +33,32 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UnauthorizedUserException::class)
-    fun handleInvalidCredentialException(e: UnauthorizedUserException): ResponseEntity<ErrorResponse> {
+    fun handleUnauthorizedUserException(e: UnauthorizedUserException): ResponseEntity<ErrorResponse> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
     }
 
     @ExceptionHandler(PasswordIncorrectException::class)
-    fun handleInvalidCredentialException(e: PasswordIncorrectException): ResponseEntity<ErrorResponse> {
+    fun handlePasswordIncorrectException(e: PasswordIncorrectException): ResponseEntity<ErrorResponse> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
     }
 
     @ExceptionHandler(RecentlyUsedPasswordException::class)
-    fun handleInvalidCredentialException(e: RecentlyUsedPasswordException): ResponseEntity<ErrorResponse> {
+    fun handleRecentlyUsedPasswordException(e: RecentlyUsedPasswordException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(ModelAlreadyExistsException::class)
+    fun handleModelAlreadyExistsException(e: ModelAlreadyExistsException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(InvalidOAuthUserException::class)
+    fun handleInvalidOAuthUserException(e: InvalidOAuthUserException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler(OAuthTokenRetrieveException::class)
+    fun handleOAuthTokenRetrieveException(e: OAuthTokenRetrieveException): ResponseEntity<ErrorResponse> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorResponse(e.message))
     }
 }

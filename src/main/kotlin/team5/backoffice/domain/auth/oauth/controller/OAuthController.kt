@@ -2,6 +2,7 @@ package team5.backoffice.domain.auth.oauth.controller
 
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.web.bind.annotation.*
+import team5.backoffice.domain.auth.dto.TokenResponse
 import team5.backoffice.domain.auth.oauth.OAuthClientService
 import team5.backoffice.domain.auth.oauth.service.OAuthLoginService
 import team5.backoffice.domain.auth.oauth.type.OAuthProviderConverter
@@ -27,7 +28,7 @@ class OAuthController(
     fun callback(
         @PathVariable provider: String,
         @RequestParam code: String
-    ): String {
+    ): TokenResponse {
         val oAuthProvider = oAuthProviderConverter.convert(provider)
         return oAuthLoginService.login(oAuthProvider, code)
     }

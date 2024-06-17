@@ -101,7 +101,7 @@ class CourseService(
         course.apply {
             this.title = request.title
             this.description = request.description
-//            this.category = category
+            this.category = category
             this.imageUrl = request.imageUrl
         }
         return CourseSimpleResponse.from(course)

@@ -11,6 +11,8 @@ import team5.backoffice.domain.auth.oauth.OAuthClient
 import team5.backoffice.domain.auth.oauth.naver.dto.NaverOAuthUserInfo
 import team5.backoffice.domain.auth.oauth.naver.dto.NaverTokenResponse
 import team5.backoffice.domain.auth.oauth.type.OAuthProvider
+import team5.backoffice.domain.exception.oauth.InvalidOAuthUserException
+import team5.backoffice.domain.exception.oauth.OAuthTokenRetrieveException
 
 @Component
 class NaverOAuthClient(
@@ -46,11 +48,11 @@ class NaverOAuthClient(
             .body(LinkedMultiValueMap<String, String>().apply { this.setAll(requestData) })
             .retrieve()
             .onStatus(HttpStatusCode::isError) { _, response ->
-                throw RuntimeException("${response.statusCode} naver AccessToken 조회 실패")
+                throw OAuthTokenRetrieveException("NAVER: ${response.statusCode}")
             }
             .body<NaverTokenResponse>()
             ?.accessToken
-            ?: throw RuntimeException("naver AccessToken 조회 실패")
+            ?: throw OAuthTokenRetrieveException("NAVER")
 
     }
 
@@ -61,10 +63,10 @@ class NaverOAuthClient(
             .header("Authorization", "Bearer $accessToken")
             .retrieve()
             .onStatus(HttpStatusCode::isError) { _, response ->
-                throw RuntimeException("${response.statusCode} naver user 조회 실패")
+                throw InvalidOAuthUserException("NAVER: ${response.statusCode}")
             }
             .body<NaverOAuthUserInfo>()
-            ?: throw RuntimeException("naver user조회 실패")
+            ?: throw InvalidOAuthUserException("NAVER")
     }
 
     override fun supports(provider: OAuthProvider): Boolean {

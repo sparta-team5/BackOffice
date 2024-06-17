@@ -4,12 +4,8 @@ import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import team5.backoffice.domain.auth.dto.ChangePasswordRequest
-import team5.backoffice.domain.auth.dto.LoginRequest
-import team5.backoffice.domain.auth.dto.SignUpRequest
-import team5.backoffice.domain.exception.ModelNotFoundException
-import team5.backoffice.domain.exception.PasswordIncorrectException
-import team5.backoffice.domain.exception.RecentlyUsedPasswordException
+import team5.backoffice.domain.auth.dto.*
+import team5.backoffice.domain.exception.*
 import team5.backoffice.domain.user.dto.StudentResponse
 import team5.backoffice.domain.user.model.Student
 import team5.backoffice.domain.user.repository.StudentRepository
@@ -23,7 +19,7 @@ class StudentService(
 ) {
     fun signUpStudent(signUpRequest: SignUpRequest): StudentResponse {
         if (studentRepository.existsByEmail(signUpRequest.email)) {
-            throw Exception("이미 존재하는 회원")
+            throw ModelAlreadyExistsException("student", "email : ${signUpRequest.email}")
         }
         val student = Student(
             nickname = signUpRequest.nickname,
@@ -34,17 +30,26 @@ class StudentService(
         return StudentResponse.from(student)
     }
 
-    fun loginStudent(loginRequest: LoginRequest): String {
+    @Transactional
+    fun loginStudent(loginRequest: LoginRequest): TokenResponse {
         val student = studentRepository.findByEmail(loginRequest.email) ?: throw ModelNotFoundException(
-            "student",
-            "email: ${loginRequest.email}"
+            "student", "email: ${loginRequest.email}"
         )
         if (!passwordEncoder.matches(
-                loginRequest.password,
-                student.password
+                loginRequest.password, student.password
             )
         ) throw PasswordIncorrectException()
-        return jwtPlugin.generateAccessToken(subject = student.id.toString(), email = student.email, role = "STUDENT")
+        return generateTokensWithStudent(student)
+    }
+
+    @Transactional
+    fun regenerateToken(request: TokenRequest): TokenResponse {
+        val student = studentRepository.findByRefreshToken(request.refreshToken) ?: throw ModelNotFoundException(
+            "student",
+            "refresh token"
+        )
+        jwtPlugin.validateRefreshToken(request.refreshToken).onFailure { throw InvalidCredentialException() }
+        return generateTokensWithStudent(student)
     }
 
     @Transactional
@@ -55,8 +60,7 @@ class StudentService(
 
         val newPasswordEncoded = passwordEncoder.encode(request.newPassword)
         if (!passwordEncoder.matches(
-                request.password,
-                student.password
+                request.password, student.password
             )
         ) throw PasswordIncorrectException()
 
@@ -70,5 +74,19 @@ class StudentService(
         student.oldPassword1?.let { if (passwordEncoder.matches(newPassword, student.oldPassword1)) return false }
         student.oldPassword2?.let { if (passwordEncoder.matches(newPassword, student.oldPassword2)) return false }
         return true
+    }
+
+    fun generateTokensWithStudent(student: Student): TokenResponse {
+        val accessToken = jwtPlugin.generateAccessToken(
+            subject = student.id.toString(), email = student.email, role = "STUDENT"
+        )
+        val refreshToken = jwtPlugin.generateRefreshToken(
+            subject = student.id.toString(), email = student.email, role = "STUDENT"
+        )
+        student.apply {
+            this.refreshToken = refreshToken
+        }
+        studentRepository.save(student)
+        return TokenResponse(accessToken = accessToken, refreshToken = refreshToken)
     }
 }

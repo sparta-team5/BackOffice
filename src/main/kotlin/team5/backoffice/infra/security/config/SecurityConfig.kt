@@ -28,18 +28,18 @@ class SecurityConfig(
                     "/auth/tutor/signup",
                     "/auth/student/login",
                     "/auth/student/signup",
+                    "/auth/student/token",
                     "/oauth/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/courses/all",
                     "/courses/{courseId:\\d+}/all",
-                    "/courses/filter/all"
+                    "/courses/filter/all",
+                    "/courses/{courseId:\\d+}/all"
                 ).permitAll().anyRequest().authenticated()
-            }
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            }.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .exceptionHandling {
                 it.authenticationEntryPoint(authenticationEntryPoint)
-            }
-            .build()
+            }.build()
     }
 }
