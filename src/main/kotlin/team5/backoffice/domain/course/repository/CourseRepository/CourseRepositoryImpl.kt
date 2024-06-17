@@ -125,9 +125,10 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         filter.rate?.let { builder.and(review.rate.avg().goe(it)) }
         filter.bookmarkCount?.let { builder.and(bookmark.count().goe(it)) }
         filter.subscriptionCount?.let { builder.and(subscription.count().goe(it)) }
-        durationFilter.viewDate?.let { builder.and(view.createdAt.after(it)) }
-        durationFilter.bookmarkDate?.let { builder.and(bookmark.createdAt.after(it)) }
-        durationFilter.subscriptionDate?.let { builder.and(subscription.createdAt.after(it)) }
+        durationFilter.duration?.let { builder.and(view.createdAt.after(it)) }
+        durationFilter.duration?.let { builder.and(bookmark.createdAt.after(it)) }
+        durationFilter.duration?.let { builder.and(subscription.createdAt.after(it)) }
+        durationFilter.duration?.let { builder.and(review.createdAt.after(it)) }
 
         val query = queryFactory
             .select(
@@ -178,9 +179,10 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         filter.rate?.let { builder.and(review.rate.avg().goe(it)) }
         filter.bookmarkCount?.let { builder.and(bookmark.count().goe(it)) }
         filter.subscriptionCount?.let { builder.and(subscription.count().goe(it)) }
-        durationFilter.viewDate?.let { builder.and(view.createdAt.after(it)) }
-        durationFilter.bookmarkDate?.let { builder.and(bookmark.createdAt.after(it)) }
-        durationFilter.subscriptionDate?.let { builder.and(subscription.createdAt.after(it)) }
+        durationFilter.duration?.let { builder.and(view.createdAt.after(it)) }
+        durationFilter.duration?.let { builder.and(bookmark.createdAt.after(it)) }
+        durationFilter.duration?.let { builder.and(subscription.createdAt.after(it)) }
+        durationFilter.duration?.let { builder.and(review.createdAt.after(it)) }
 
         val query = queryFactory
             .select(
