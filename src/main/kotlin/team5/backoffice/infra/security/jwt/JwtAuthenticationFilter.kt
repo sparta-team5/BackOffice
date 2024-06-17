@@ -27,7 +27,7 @@ class JwtAuthenticationFilter(
         val jwt = request.getBearerToken()
 
         if (jwt != null) {
-            jwtPlugin.validateToken(jwt)
+            jwtPlugin.validateAccessToken(jwt)
                 .onSuccess {
                     val userId = it.payload.subject.toLong()
                     val role = it.payload.get("role", String::class.java)

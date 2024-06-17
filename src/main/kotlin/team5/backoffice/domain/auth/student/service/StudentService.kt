@@ -48,7 +48,7 @@ class StudentService(
             "student",
             "refresh token"
         )
-        jwtPlugin.validateToken(request.refreshToken).onFailure { throw InvalidCredentialException() }
+        jwtPlugin.validateRefreshToken(request.refreshToken).onFailure { throw InvalidCredentialException() }
         return generateTokensWithStudent(student)
     }
 
