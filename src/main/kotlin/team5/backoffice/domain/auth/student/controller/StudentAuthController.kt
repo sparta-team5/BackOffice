@@ -19,7 +19,7 @@ class StudentAuthController(
 
     @PostMapping("/signup")
     fun signUpStudent(
-        @Valid @RequestBody signUpRequest: SignUpRequest
+        @RequestBody @Valid signUpRequest: SignUpRequest
     ): ResponseEntity<StudentResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)

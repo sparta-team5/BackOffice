@@ -20,7 +20,7 @@ class TutorAuthController(
 ) {
     @PostMapping("/signup")
     fun signUpTutor(
-        @Valid @RequestBody signUpRequest: SignUpRequest
+        @RequestBody @Valid signUpRequest: SignUpRequest
     ): ResponseEntity<TutorResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
