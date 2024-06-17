@@ -38,10 +38,10 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
     override fun getCourseViewSum(courseId: Long): Long {
         return queryFactory.select(view.count())
             .from(course)
-            .join(course, view.courses)
+//            .join(course, view.courses)
             .where(course.id.eq(courseId))
             .groupBy(course)
-            .fetchOne()
+            .fetchOne() ?: 0
     }
 
     override fun findAllCourses(cursor: CursorRequest, pageSize: Int): List<CourseLowData> {
@@ -64,8 +64,8 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             .from(course)
             .leftJoin(course, view.course)
             .leftJoin(course, review.course)
-            .leftJoin(course, bookmark.course)
-            .leftJoin(course, subscription.course)
+//            .leftJoin(course, bookmark.course)
+//            .leftJoin(course, subscription.course)
             .where(applyCursorPosition(cursor))
             .groupBy(course)
             .applyOrderBy(cursor.cursorOrderType)
@@ -158,7 +158,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         pageable: Pageable,
         filter: FilteringRequest,
         durationFilter: DurationFilter
-    ): TutorLowData {
+    ): List<TutorLowData> {
         val builder = BooleanBuilder()
 
         filter.title?.let { builder.and(course.title.like("%$it%")) }
@@ -189,8 +189,8 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             .leftJoin(course.tutor, tutor)
             .leftJoin(course, review.course)
             .leftJoin(course, view.course)
-            .leftJoin(course.subscription, subscription)
-            .leftJoin(course.bookmark, bookmark)
+            .leftJoin(course, subscription.course)
+            .leftJoin(course, bookmark.course)
             .leftJoin(tutor, follow.tutor)
             .where(
                 course.tutor.id.eq(tutorId)
@@ -204,40 +204,40 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         return query
     }
 
-    fun findMyStudentInfo(
-        tutorId: Long,
-        pageable: Pageable,
-        studentFilter: SomethingFilter,
-        groupType: String,
-        durationFilter: DurationFilter
-    ): List<Student> {
-        val builder = BooleanBuilder()
-        val student = QStudent.student
+//    fun findMyStudentInfo(
+//        tutorId: Long,
+//        pageable: Pageable,
+//        studentFilter: SomethingFilter,
+//        groupType: String,
+//        durationFilter: DurationFilter
+//    ): List<Student> {
+//        val builder = BooleanBuilder()
+//        val student = QStudent.student
+//
+//        //TODO: 필터
+//
+//        val query = queryFactory.select(student)
+//            .from(student)
+//            .leftJoin(follow).on(follow.student.id.eq(student.id))
+//            .leftJoin(tutor).on(follow.tutor.id.eq(tutor.id))
+//            .leftJoin(student).on(student.id.eq(view.student.id))
+//            .where(tutor.id.eq(tutorId))
+//            .applyGroupBy(groupType)
+//            .offset(pageable.offset)
+//            .limit(pageable.pageSize.toLong())
+//            .fetch()
+//        return query
+//    }
 
-        //TODO: 필터
-
-        val query = queryFactory.select(student)
-            .from(student)
-            .leftJoin(follow).on(follow.student.id.eq(student.id))
-            .leftJoin(tutor).on(follow.tutor.id.eq(tutor.id))
-            .leftJoin(student).on(student.id.eq(view.student.id))
-            .where(tutor.id.eq(tutorId))
-            .applyGroupBy(groupType)
-            .offset(pageable.offset)
-            .limit(pageable.pageSize.toLong())
-            .fetch()
-        return query
-    }
-
-    // 데이터별 학생 수를 구하기 위한 groupBy 지정 함수 이 함수 사용시 student.count()가 반드시 필요함
-    private fun <T> JPAQuery<T>.applyGroupBy(groupType: String): JPAQuery<T> {
-        return when (groupType) {
-            "age" -> this.groupBy(student.age)
-            "local" -> this.groupBy(student.local)
-            "student" -> this.groupBy(student)
-            else -> throw RuntimeException("Illegal group type: $groupType")
-        }
-    }
+//    // 데이터별 학생 수를 구하기 위한 groupBy 지정 함수 이 함수 사용시 student.count()가 반드시 필요함
+//    private fun <T> JPAQuery<T>.applyGroupBy(groupType: String): JPAQuery<T> {
+//        return when (groupType) {
+//            "age" -> this.groupBy(student.age)
+//            "local" -> this.groupBy(student.local)
+//            "student" -> this.groupBy(student)
+//            else -> throw RuntimeException("Illegal group type: $groupType")
+//        }
+//    }
 
     //나를 팔로우한 학생이 내 코스를 얼마나 구독했는가
     fun findMyStudentWhoSubscribeTutor(tutor: Tutor): List<Tuple> {
@@ -253,8 +253,8 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         return query
     }
 
-    // 아직 student 에 필드가 없어 단순 객체 반환으로 구현해 봤습니다.
-
-    //duration filter 사용시 해당 타입의 지정 시간 이후의 데이터만 구할 수 있습니다
+//     아직 student 에 필드가 없어 단순 객체 반환으로 구현해 봤습니다.
+//
+//    duration filter 사용시 해당 타입의 지정 시간 이후의 데이터만 구할 수 있습니다
 }
 

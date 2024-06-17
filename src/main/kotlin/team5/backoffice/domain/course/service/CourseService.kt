@@ -52,7 +52,13 @@ class CourseService(
                 getCourseViewCount(courseId)
             )
         } else {
-            CourseResponse.from(course, isBookMarked = false, isSubscribed = false, getCourseAverageRate(courseId), getCourseViewCount(courseId))
+            CourseResponse.from(
+                course,
+                isBookMarked = false,
+                isSubscribed = false,
+                getCourseAverageRate(courseId),
+                getCourseViewCount(courseId)
+            )
         }
     }
 
@@ -120,13 +126,21 @@ class CourseService(
 
     @Transactional
     fun addBookmark(courseId: Long, studentId: Long) {
-        courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
-        studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException(
+        val course =
+            courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
+        val student = studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException(
             "student",
             "id: $studentId"
         )
         if (!isBookmarkExists(courseId, studentId)) {
-            bookmarkRepository.save(Bookmark(BookmarkId(courseId, studentId), LocalDateTime.now()))
+            bookmarkRepository.save(
+                Bookmark(
+                    BookmarkId(courseId, studentId),
+                    LocalDateTime.now(),
+                    course,
+                    student
+                )
+            )
         }
     }
 
@@ -145,13 +159,21 @@ class CourseService(
 
     @Transactional
     fun subscribe(courseId: Long, studentId: Long) {
-        courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
-        studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException(
+        val course =
+            courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
+        val student = studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException(
             "student",
             "id: $studentId"
         )
         if (!isSubscribeExists(courseId, studentId)) {
-            subscriptionRepository.save(Subscription(SubscriptionId(courseId, studentId), LocalDateTime.now()))
+            subscriptionRepository.save(
+                Subscription(
+                    SubscriptionId(courseId, studentId),
+                    LocalDateTime.now(),
+                    course,
+                    student
+                )
+            )
         }
     }
 
@@ -183,6 +205,7 @@ class CourseService(
     private fun getCourseAverageRate(courseId: Long): Double {
         return courseRepository.getCourseAvgRate(courseId)
     }
+
     private fun getCourseViewCount(courseId: Long): Long {
         return courseRepository.getCourseViewSum(courseId)
     }

@@ -49,7 +49,7 @@ class CourseController(
     ): ResponseEntity<CourseSimpleResponse> {
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(courseService.createCourse(request))
+            .body(courseService.createCourse(request, 1L))
     }
 
     @PutMapping("/{courseId}")
@@ -59,7 +59,7 @@ class CourseController(
     ): ResponseEntity<CourseSimpleResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.updateCourseById(courseId, request))
+            .body(courseService.updateCourseById(courseId, request, 1L))
     }
 
     @DeleteMapping("/{courseId}")

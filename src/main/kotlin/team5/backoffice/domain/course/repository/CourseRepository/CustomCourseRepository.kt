@@ -11,7 +11,7 @@ interface CustomCourseRepository {
 
     fun findByFilter(filter: FilteringRequest, pageable: Pageable, durationFilter: DurationFilter): List<CourseLowData>
 
-    fun findCoursesInfoByTutor(tutorId: Long, pageable: Pageable, filter: FilteringRequest, durationFilter: DurationFilter): TutorLowData
+    fun findCoursesInfoByTutor(tutorId: Long, pageable: Pageable, filter: FilteringRequest, durationFilter: DurationFilter): List<TutorLowData>
 
     fun getCourseViewSum(courseId: Long) : Long
 

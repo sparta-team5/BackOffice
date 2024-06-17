@@ -1,8 +1,6 @@
 package team5.backoffice.domain.user.model
 
-import jakarta.persistence.EmbeddedId
-import jakarta.persistence.Entity
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "follow")
@@ -11,4 +9,11 @@ class Follow(
     @EmbeddedId
     val id: FollowId,
 
+    @ManyToOne
+    @JoinColumn(name = "tutor_id", insertable = false, updatable = false)
+    val tutor: Tutor,
+
+    @ManyToOne
+    @JoinColumn(name = "student)id", insertable = false, updatable = false)
+    val student: Student,
     )
