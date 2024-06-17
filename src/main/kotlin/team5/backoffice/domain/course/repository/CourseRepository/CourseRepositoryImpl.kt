@@ -66,7 +66,6 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             .leftJoin(review).on(course.eq(review.course))
             .leftJoin(bookmark).on(course.eq(bookmark.course))
             .leftJoin(subscription).on(course.eq(subscription.course))
-            .where(applyCursorPosition(cursor))
             .groupBy(
                 course.id,
                 course.title,
@@ -76,6 +75,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                 course.imageUrl,
                 course.createdAt
             )
+            .having(applyCursorPosition(cursor))
             .applyOrderBy(cursor.cursorOrderType)
             .limit(pageSize.toLong())
             .fetch()
