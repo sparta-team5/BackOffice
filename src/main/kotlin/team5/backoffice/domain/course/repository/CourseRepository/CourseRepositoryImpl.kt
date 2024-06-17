@@ -77,6 +77,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             )
             .having(applyCursorPosition(cursor))
             .applyOrderBy(cursor.cursorOrderType)
+            .orderBy(course.id.desc())
             .limit(pageSize.toLong())
             .fetch()
 
@@ -165,6 +166,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             )
             .having(havingBuilder)
             .applyOrderBy(filter.orderType)
+            .orderBy(course.id.desc())
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .fetch()
