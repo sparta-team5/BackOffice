@@ -1,7 +1,7 @@
 package team5.backoffice.domain.lecture.model
 
-import team5.backoffice.domain.course.model.Course
 import jakarta.persistence.*
+import team5.backoffice.domain.course.model.Course
 
 @Entity
 @Table(name = "lecture")

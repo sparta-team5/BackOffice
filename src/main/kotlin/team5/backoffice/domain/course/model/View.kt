@@ -5,19 +5,19 @@ import team5.backoffice.domain.user.model.Student
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "bookmark")
-class Bookmark(
+@Table(name = "view")
+class View(
     @EmbeddedId
-    val id: BookmarkId,
+    val id : ViewId,
 
     @Column(name = "created_at")
-    val createdAt: LocalDateTime,
+    val createdAt : LocalDateTime,
 
     @ManyToOne
     @JoinColumn(name = "course_id", insertable = false, updatable = false)
-    val course: Course,
+    val course : Course,
 
     @ManyToOne
     @JoinColumn(name = "student_id", insertable = false, updatable = false)
-    val student: Student,
+    val student : Student
 )

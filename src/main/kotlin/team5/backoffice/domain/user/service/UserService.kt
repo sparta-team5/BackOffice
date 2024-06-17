@@ -69,6 +69,7 @@ class UserService(
     @Transactional
     fun followStudentAndTutor(tutorId: Long, studentId: Long): FollowResponse {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("tutor", "id: $tutorId")
+        val student = studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
         if (followRepository.existsById(
                 FollowId(
                     studentId,
@@ -76,7 +77,7 @@ class UserService(
                 )
             )
         ) throw IllegalStateException("already followed")
-        return followRepository.save(Follow(FollowId(studentId, tutor.id!!)))
+        return followRepository.save(Follow(FollowId(studentId, tutor.id!!), tutor, student))
             .let { FollowResponse.from(it) }
 
     }

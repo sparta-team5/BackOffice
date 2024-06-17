@@ -1,7 +1,8 @@
 package team5.backoffice.domain.course.model
 
-import team5.backoffice.domain.user.model.Tutor
 import jakarta.persistence.*
+import team5.backoffice.domain.user.model.Tutor
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "course")
@@ -24,10 +25,11 @@ class Course(
     @JoinColumn(name = "category", nullable = false)
     var category: Category,
 
+    @Column(name = "created_at", nullable = false)
+    val createdAt: LocalDateTime,
 
     ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
-    
 }

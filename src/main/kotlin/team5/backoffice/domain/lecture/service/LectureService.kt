@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import team5.backoffice.domain.course.model.SubscriptionId
-import team5.backoffice.domain.course.repository.CourseRepository
+import team5.backoffice.domain.course.repository.CourseRepository.CourseRepository
 import team5.backoffice.domain.course.repository.SubscriptionRepository
 import team5.backoffice.domain.exception.ModelNotFoundException
 import team5.backoffice.domain.exception.UnauthorizedUserException

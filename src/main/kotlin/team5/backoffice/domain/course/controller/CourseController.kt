@@ -1,5 +1,7 @@
 package team5.backoffice.domain.course.controller
 
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -18,26 +20,28 @@ class CourseController(
     @GetMapping("/all")
     fun getAllCoursesWithoutAuth(
         @ModelAttribute cursor: CursorRequest,
+        @RequestParam pageSize: Int
     ): ResponseEntity<CursorPageResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getAllCourses(cursor, null))
+            .body(courseService.getAllCourses(cursor, pageSize, null))
     }
 
     @GetMapping
     fun getAllCourses(
         @ModelAttribute cursor: CursorRequest,
+        @PageableDefault pageSize: Int,
         authentication: Authentication,
     ): ResponseEntity<CursorPageResponse> {
         val student = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getAllCourses(cursor, student.id))
+            .body(courseService.getAllCourses(cursor, pageSize,student.id))
     }
 
     @GetMapping("/{courseId}/all")
     fun getCourseByIdWithoutAuth(
-        @PathVariable courseId: Long
+        @PathVariable courseId: Long,
     ): ResponseEntity<CourseResponse> {
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -55,17 +59,30 @@ class CourseController(
             .body(courseService.getCourseById(courseId, student.id))
     }
 
+    @GetMapping("/filter/all")
+    fun getFilteredCoursesWithoutAuth(
+        @ModelAttribute filter: FilteringRequest,
+        @ModelAttribute durationFilter: DurationFilter,
+        pageable: Pageable
+    ): ResponseEntity<List<CourseListResponse>> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(courseService.getFilteredCourses(filter, pageable, null, durationFilter))
+    }
 
-//    @GetMapping("/filter") //(category=?title=?rate=?...)
-//    fun getFilteredCourses(
-//        @ModelAttribute cursorRequest: CursorRequest,
-//        @ModelAttribute filter: FilteringRequest
-//    ): ResponseEntity<CursorPageResponse> {
-//        // val studentId : Long? = 있으면 받고 없으면 null
-//        return ResponseEntity
-//            .status(HttpStatus.OK)
-//            .body(courseService.getFilteredCourses(cursorRequest, filter, 1L))
-//    }
+    @GetMapping("/filter")
+    fun getFilteredCourses(
+        @ModelAttribute filter: FilteringRequest,
+        @ModelAttribute durationFilter: DurationFilter,
+        authentication: Authentication,
+        pageable: Pageable
+    ): ResponseEntity<List<CourseListResponse>> {
+        val student = authentication.principal as UserPrincipal
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(courseService.getFilteredCourses(filter, pageable, student.id, durationFilter))
+    }
+
 
     @PostMapping()
     @PreAuthorize("hasRole('TUTOR')")

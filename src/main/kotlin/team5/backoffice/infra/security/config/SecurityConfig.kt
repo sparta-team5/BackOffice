@@ -33,6 +33,7 @@ class SecurityConfig(
                     "/v3/api-docs/**",
                     "/courses/all",
                     "/courses/{courseId:\\d+}/all",
+                    "/courses/filter/all"
                 ).permitAll().anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
