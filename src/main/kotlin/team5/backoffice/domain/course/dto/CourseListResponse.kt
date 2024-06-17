@@ -19,7 +19,7 @@ data class CourseListResponse(
         fun from(course: CourseLowData, isBookmarked: Boolean, isSubscribed: Boolean) = CourseListResponse(
             id = course.id,
             title = course.title,
-            tutor = course.tutor.nickname,
+            tutor = course.tutorName,
             category = course.categoryName,
             description = course.description,
             imageUrl = course.imageUrl,

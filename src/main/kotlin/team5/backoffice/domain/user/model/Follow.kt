@@ -14,6 +14,6 @@ class Follow(
     val tutor: Tutor,
 
     @ManyToOne
-    @JoinColumn(name = "student)id", insertable = false, updatable = false)
+    @JoinColumn(name = "student_id", insertable = false, updatable = false)
     val student: Student,
     )

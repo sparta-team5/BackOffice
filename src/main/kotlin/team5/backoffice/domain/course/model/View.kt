@@ -7,17 +7,19 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "view")
 class View(
-    @EmbeddedId
-    val id : ViewId,
 
     @Column(name = "created_at")
     val createdAt : LocalDateTime,
 
     @ManyToOne
-    @JoinColumn(name = "course_id", insertable = false, updatable = false)
+    @JoinColumn(name = "course_id")
     val course : Course,
 
     @ManyToOne
-    @JoinColumn(name = "student_id", insertable = false, updatable = false)
+    @JoinColumn(name = "student_id", insertable = true, updatable = false)
     val student : Student
-)
+) {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id:Long? = null
+}

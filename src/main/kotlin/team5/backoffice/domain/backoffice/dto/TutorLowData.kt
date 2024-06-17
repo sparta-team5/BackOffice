@@ -1,4 +1,4 @@
-package team5.backoffice.domain.course.dto
+package team5.backoffice.domain.backoffice.dto
 
 data class TutorLowData(
     val amountView : Long,
