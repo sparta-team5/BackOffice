@@ -4,7 +4,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import team5.backoffice.domain.auth.tutor.service.TutorService
 import team5.backoffice.domain.course.dto.*
 import team5.backoffice.domain.course.model.*
 import team5.backoffice.domain.course.repository.BookmarkRepository
@@ -13,7 +12,6 @@ import team5.backoffice.domain.course.repository.CourseRepository.CourseReposito
 import team5.backoffice.domain.course.repository.SubscriptionRepository
 import team5.backoffice.domain.exception.ModelNotFoundException
 import team5.backoffice.domain.exception.UnauthorizedUserException
-import team5.backoffice.domain.review.repository.ReviewRepository
 import team5.backoffice.domain.user.repository.StudentRepository
 import team5.backoffice.domain.user.repository.TutorRepository
 import java.time.LocalDateTime
