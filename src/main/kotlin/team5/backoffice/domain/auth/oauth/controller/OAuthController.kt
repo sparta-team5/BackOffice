@@ -3,9 +3,8 @@ package team5.backoffice.domain.auth.oauth.controller
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.web.bind.annotation.*
 import team5.backoffice.domain.auth.oauth.OAuthClientService
-import team5.backoffice.domain.auth.oauth.OAuthProviderConverter
 import team5.backoffice.domain.auth.oauth.service.OAuthLoginService
-import team5.backoffice.domain.auth.oauth.type.OAuthProvider
+import team5.backoffice.domain.auth.oauth.type.OAuthProviderConverter
 
 @RestController
 @RequestMapping("/oauth")
@@ -16,10 +15,11 @@ class OAuthController(
 ) {
     @GetMapping("/{provider}")
     fun redirectLoginPage(
-        @PathVariable provider: OAuthProvider,
+        @PathVariable provider: String,
         response: HttpServletResponse
     ) {
-        oAuthClientService.getLoginPageUrl(provider)
+        val oAuthProvider = oAuthProviderConverter.convert(provider)
+        oAuthClientService.getLoginPageUrl(oAuthProvider)
             .let { response.sendRedirect(it) }
     }
 

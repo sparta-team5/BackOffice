@@ -1,8 +1,7 @@
-package team5.backoffice.domain.auth.oauth
+package team5.backoffice.domain.auth.oauth.type
 
 import org.springframework.core.convert.converter.Converter
 import org.springframework.stereotype.Component
-import team5.backoffice.domain.auth.oauth.type.OAuthProvider
 
 @Component
 class OAuthProviderConverter : Converter<String, OAuthProvider> {

@@ -1,4 +1,4 @@
-package team5.backoffice.domain.auth.oauth.naver
+package team5.backoffice.domain.auth.oauth.google
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatusCode
@@ -8,28 +8,30 @@ import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import team5.backoffice.domain.auth.oauth.OAuthClient
-import team5.backoffice.domain.auth.oauth.naver.dto.NaverOAuthUserInfo
-import team5.backoffice.domain.auth.oauth.naver.dto.NaverTokenResponse
+import team5.backoffice.domain.auth.oauth.google.dto.GoogleOAuthUserInfo
+import team5.backoffice.domain.auth.oauth.google.dto.GoogleTokenResponse
 import team5.backoffice.domain.auth.oauth.type.OAuthProvider
 
 @Component
-class NaverOAuthClient(
-    @Value("\${oauth2.naver.client_id}") val clientId: String,
-    @Value("\${oauth2.naver.client_secret}") val clientSecret: String,
-    @Value("\${oauth2.naver.redirect_url}") val redirectUrl: String,
-    @Value("\${oauth2.naver.auth_server_base_url}") val authServerBaseUrl: String,
-    @Value("\${oauth2.naver.resource_server_base_url}") val resourceServerBaseUrl: String,
+class GoogleOAuthClient(
+    @Value("\${oauth2.google.client_id}") val clientId: String,
+    @Value("\${oauth2.google.client_secret}") val clientSecret: String,
+    @Value("\${oauth2.google.redirect_url}") val redirectUrl: String,
+    @Value("\${oauth2.google.auth_server_base_url}") val authServerBaseUrl: String,
+    @Value("\${oauth2.google.auth_server_token_url}") val authServerTokenUrl: String,
+    @Value("\${oauth2.google.resource_server_base_url}") val resourceServerBaseUrl: String,
     private val restClient: RestClient
 ) : OAuthClient {
 
     override fun getLoginPageUrl(): String {
         return StringBuilder(authServerBaseUrl)
-            .append("/oauth2.0/authorize")
             .append("?client_id=").append(clientId)
             .append("&redirect_uri=").append(redirectUrl)
-            .append("&response_type=").append("code")
+            .append("&scope=email profile")
+            .append("&response_type=code")
             .toString()
     }
+
 
     override fun getAccessToken(authorizationCode: String): String {
         val requestData = mutableMapOf(
@@ -39,35 +41,35 @@ class NaverOAuthClient(
             "redirect_uri" to redirectUrl,
             "code" to authorizationCode,
         )
-
+        println(authServerTokenUrl)
         return restClient.post()
-            .uri("$authServerBaseUrl/oauth2.0/token")
+            .uri(authServerTokenUrl)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
             .body(LinkedMultiValueMap<String, String>().apply { this.setAll(requestData) })
             .retrieve()
             .onStatus(HttpStatusCode::isError) { _, response ->
-                throw RuntimeException("${response.statusCode} naver AccessToken 조회 실패")
+                throw RuntimeException("${response.statusCode} Google AccessToken 조회 실패")
             }
-            .body<NaverTokenResponse>()
+            .body<GoogleTokenResponse>()
             ?.accessToken
-            ?: throw RuntimeException("naver AccessToken 조회 실패")
+            ?: throw RuntimeException("google AccessToken 조회 실패")
 
     }
 
 
-    override fun retrieveUserInfo(accessToken: String): NaverOAuthUserInfo {
+    override fun retrieveUserInfo(accessToken: String): GoogleOAuthUserInfo {
         return restClient.get()
-            .uri("$resourceServerBaseUrl/v1/nid/me")
+            .uri("$resourceServerBaseUrl/oauth2/v1/userinfo")
             .header("Authorization", "Bearer $accessToken")
             .retrieve()
             .onStatus(HttpStatusCode::isError) { _, response ->
-                throw RuntimeException("${response.statusCode} naver user 조회 실패")
+                throw RuntimeException("${response.statusCode} Google user 조회 실패")
             }
-            .body<NaverOAuthUserInfo>()
-            ?: throw RuntimeException("naver user조회 실패")
+            .body<GoogleOAuthUserInfo>()
+            ?: throw RuntimeException("Google user조회 실패")
     }
 
     override fun supports(provider: OAuthProvider): Boolean {
-        return provider == OAuthProvider.NAVER
+        return provider == OAuthProvider.GOOGLE
     }
 }
