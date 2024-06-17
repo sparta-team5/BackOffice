@@ -23,7 +23,6 @@ data class CourseListResponse(
             category = course.categoryName,
             description = course.description,
             imageUrl = course.imageUrl,
-            viewCount = course.viewCount,
             isBookmarked = isBookmarked,
             isSubscribed = isSubscribed,
             createdAt = course.createdAt,

@@ -3,10 +3,12 @@ package team5.backoffice.domain.user.service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import team5.backoffice.domain.auth.oauth.OAuthLoginUserInfo
 import team5.backoffice.domain.exception.ModelNotFoundException
 import team5.backoffice.domain.user.dto.*
 import team5.backoffice.domain.user.model.Follow
 import team5.backoffice.domain.user.model.FollowId
+import team5.backoffice.domain.user.model.Student
 import team5.backoffice.domain.user.repository.FollowRepository
 import team5.backoffice.domain.user.repository.StudentRepository
 import team5.backoffice.domain.user.repository.TutorRepository
@@ -86,6 +88,20 @@ class UserService(
         val follow = followRepository.findByIdOrNull(FollowId(studentId, tutor.id!!))
             ?: throw ModelNotFoundException("follow", "tutor id: $tutorId, studentId: $studentId")
         followRepository.delete(follow)
+    }
+
+    @Transactional
+    fun registerIfAbsent(userInfo: OAuthLoginUserInfo): Student {
+        return studentRepository.findByProviderNameAndProviderId(userInfo.provider.name, userInfo.id) ?: run {
+            val student = Student(
+                nickname = userInfo.nickname,
+                email = userInfo.email,
+                password = "",
+                providerName = userInfo.provider.name,
+                providerId = userInfo.id,
+            )
+            studentRepository.save(student)
+        }
     }
 
 }

@@ -28,12 +28,12 @@ class SecurityConfig(
                     "/auth/tutor/signup",
                     "/auth/student/login",
                     "/auth/student/signup",
-                    "/oauth/naver",
-                    "/oauth/naver/callback",
+                    "/oauth/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/"
-                ).permitAll().anyRequest().permitAll()
+                    "/courses/all",
+                    "/courses/{courseId:\\d+}/all",
+                ).permitAll().anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .exceptionHandling {

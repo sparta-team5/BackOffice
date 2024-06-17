@@ -1,4 +1,4 @@
-package team5.backoffice.domain.auth.oauth
+package team5.backoffice.domain.auth.oauth.naver.dto
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.annotation.JsonNaming
