@@ -154,14 +154,20 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             .leftJoin(bookmark).on(course.eq(bookmark.course))
             .leftJoin(subscription).on(course.eq(subscription.course))
             .where(builder)
-            .groupBy(course)
+            .groupBy(
+                course.id,
+                course.title,
+                course.description,
+                course.tutor,
+                category.name,
+                course.imageUrl,
+                course.createdAt
+            )
             .having(havingBuilder)
             .applyOrderBy(filter.orderType)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .fetch()
-
-
         return query
     }
 
