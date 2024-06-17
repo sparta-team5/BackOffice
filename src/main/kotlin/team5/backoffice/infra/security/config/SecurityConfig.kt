@@ -28,8 +28,7 @@ class SecurityConfig(
                     "/auth/tutor/signup",
                     "/auth/student/login",
                     "/auth/student/signup",
-                    "/oauth/naver",
-                    "/oauth/naver/callback",
+                    "/oauth/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/"
