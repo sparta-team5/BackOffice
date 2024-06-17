@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import team5.backoffice.domain.auth.dto.ChangePasswordRequest
 import team5.backoffice.domain.auth.dto.LoginRequest
 import team5.backoffice.domain.auth.dto.SignUpRequest
+import team5.backoffice.domain.exception.ModelAlreadyExistsException
 import team5.backoffice.domain.exception.ModelNotFoundException
 import team5.backoffice.domain.exception.PasswordIncorrectException
 import team5.backoffice.domain.exception.RecentlyUsedPasswordException
@@ -22,7 +23,9 @@ class TutorService(
     private val passwordEncoder: PasswordEncoder,
 ) {
     fun signUpTutor(signUpRequest: SignUpRequest): TutorResponse {
-        if (tutorRepository.existsByEmail(signUpRequest.email)) throw Exception("이미 존재하는 회원")
+        if (tutorRepository.existsByEmail(signUpRequest.email)) {
+            throw ModelAlreadyExistsException("Tutor", "email: ${signUpRequest.email}")
+        }
 
         val tutor = Tutor(
             nickname = signUpRequest.nickname,

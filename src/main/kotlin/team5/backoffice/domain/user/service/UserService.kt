@@ -31,6 +31,7 @@ class UserService(
             studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
         student.apply {
             this.nickname = request.nickname
+            this.introduction = request.introduction
         }
         return studentRepository.save(student).let { StudentResponse.from(student) }
     }
@@ -69,7 +70,8 @@ class UserService(
     @Transactional
     fun followStudentAndTutor(tutorId: Long, studentId: Long): FollowResponse {
         val tutor = tutorRepository.findByIdOrNull(tutorId) ?: throw ModelNotFoundException("tutor", "id: $tutorId")
-        val student = studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
+        val student =
+            studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
         if (followRepository.existsById(
                 FollowId(
                     studentId,
