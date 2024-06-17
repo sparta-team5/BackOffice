@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import team5.backoffice.domain.backoffice.dto.CourseBackOfficeFilters
-import team5.backoffice.domain.backoffice.dto.StudentBackOfficeFilters
-import team5.backoffice.domain.backoffice.dto.StudentData
-import team5.backoffice.domain.backoffice.dto.TutorLowData
+import team5.backoffice.domain.backoffice.dto.*
 import team5.backoffice.domain.backoffice.service.BackOfficeService
 import team5.backoffice.domain.course.dto.CourseLowData
 import team5.backoffice.domain.course.dto.DurationFilter
@@ -57,7 +54,7 @@ class BackOfficeController(
         authentication: Authentication,
         pageable: Pageable,
         filter: StudentBackOfficeFilters
-    ): ResponseEntity<List<StudentData>> {
+    ): ResponseEntity<List<StudentDataResponse>> {
         val tutor = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -70,7 +67,7 @@ class BackOfficeController(
         authentication: Authentication,
         pageable: Pageable,
         filter: StudentBackOfficeFilters
-    ): ResponseEntity<List<StudentData>> {
+    ): ResponseEntity<List<StudentDataResponse>> {
         val tutor = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
@@ -81,11 +78,13 @@ class BackOfficeController(
     @PreAuthorize("hasRole('TUTOR')")
     fun getMyStudentIndividualInfo(
         @PathVariable studentId: Long,
+        authentication: Authentication,
         filter: DurationFilter
-    ): ResponseEntity<StudentData> {
+    ): ResponseEntity<StudentDataResponse> {
+        val tutor = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(backOfficeService.getStudentData(studentId, filter))
+            .body(backOfficeService.getStudentData(tutor.id, studentId, filter))
     }
 
     @GetMapping("/myData")
