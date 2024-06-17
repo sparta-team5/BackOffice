@@ -209,7 +209,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                 course.tutor.id.eq(tutorId)
                     .and(builder)
             )
-            .groupBy(course)
+            .groupBy(course.id)
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .fetch()
