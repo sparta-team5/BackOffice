@@ -31,7 +31,8 @@ class SecurityConfig(
                     "/oauth/**",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "/"
+                    "/courses/all",
+                    "/courses/{courseId:\\d+}/all",
                 ).permitAll().anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)

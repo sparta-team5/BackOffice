@@ -15,25 +15,46 @@ class CourseController(
     private val courseService: CourseService,
 ) {
 
-    @GetMapping()
-    fun getAllCourses(
+    @GetMapping("/all")
+    fun getAllCoursesWithoutAuth(
         @ModelAttribute cursor: CursorRequest,
     ): ResponseEntity<CursorPageResponse> {
-        // val studentId : Long? = 있으면 받고 없으면 null
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getAllCourses(cursor, 1L)) //TODO(need to be changed after security implemented)
+            .body(courseService.getAllCourses(cursor, null))
+    }
+
+    @GetMapping
+    fun getAllCourses(
+        @ModelAttribute cursor: CursorRequest,
+        authentication: Authentication,
+    ): ResponseEntity<CursorPageResponse> {
+        val student = authentication.principal as UserPrincipal
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(courseService.getAllCourses(cursor, student.id))
+    }
+
+    @GetMapping("/{courseId}/all")
+    fun getCourseByIdWithoutAuth(
+        @PathVariable courseId: Long
+    ): ResponseEntity<CourseResponse> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(courseService.getCourseById(courseId, null))
     }
 
     @GetMapping("/{courseId}")
     fun getCourseById(
         @PathVariable courseId: Long,
+        authentication: Authentication
     ): ResponseEntity<CourseResponse> {
-        // val studentId : Long? = 있으면 받고 없으면 null
+        val student = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.getCourseById(courseId, 1L)) //TODO(need to be changed after security implemented)
+            .body(courseService.getCourseById(courseId, student.id))
     }
+
 
 //    @GetMapping("/filter") //(category=?title=?rate=?...)
 //    fun getFilteredCourses(
@@ -87,31 +108,34 @@ class CourseController(
     @PostMapping("/{courseId}/bookmark")
     fun bookmarkCourse(
         @PathVariable courseId: Long,
+        authentication: Authentication
     ): ResponseEntity<Unit> {
-        // studentId =
+        val student = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(courseService.addBookmark(courseId, 4L))//TODO(need to be changed after security implemented)
+            .body(courseService.addBookmark(courseId, student.id))
     }
 
-    // 북마크에 중복에 관한 로직은 프론트엔드가 나만 아니면 돼
+
     @DeleteMapping("/{courseId}/bookmark")
     fun undoBookmarkedCourse(
         @PathVariable courseId: Long,
+        authentication: Authentication
     ): ResponseEntity<Unit> {
-        //studentId =
+        val student = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.NO_CONTENT)
-            .body(courseService.removeBookmark(courseId, 4L)) //TODO(need to be changed after security implemented)
+            .body(courseService.removeBookmark(courseId, student.id))
     }
 
     @PostMapping("/{courseId}/subscription")
     fun subscribeCourse(
         @PathVariable courseId: Long,
+        authentication: Authentication
     ): ResponseEntity<Unit> {
-        // 중복결제 방지를 위한 id 찾아오기 studentId = content.subject
+        val student = authentication.principal as UserPrincipal
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(courseService.subscribe(courseId, 4L)) // TODO(need to be changed after security implemented)
+            .body(courseService.subscribe(courseId, student.id))
     }
 }

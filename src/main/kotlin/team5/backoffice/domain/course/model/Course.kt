@@ -24,18 +24,10 @@ class Course(
     @JoinColumn(name = "category", nullable = false)
     var category: Category,
 
-    @Column(name = "view_count", nullable = false)
-    var viewCount: Long,
 
-//    @Column(name = "created_at", nullable = false)
-//    val createdAt: LocalDateTime,
-
-) {
+    ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
-
-    fun increaseViewCount() {
-        viewCount += 1
-    }
+    
 }
