@@ -7,7 +7,7 @@ data class FilteringRequest(
     val title: String,
     val description: String,
     val tutorNickName: String,
-    val category: Category,
+    val category: String,
     val rate: Double,
     val viewCount: Long,
     val orderType: OrderType,

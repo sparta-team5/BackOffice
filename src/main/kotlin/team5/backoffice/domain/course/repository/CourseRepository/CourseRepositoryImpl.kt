@@ -120,7 +120,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         filter.title?.let { builder.and(course.title.like("%$it%")) }
         filter.description?.let { builder.and(course.description.like("%$it%")) }
         filter.tutorNickName?.let { builder.and(course.tutor.nickname.eq(it)) }
-        filter.category?.let { builder.and(category.eq(it)) }
+        filter.category?.let { builder.and(category.name.eq(it)) }
         filter.viewCount?.let { builder.and(view.count().goe(it)) }
         filter.rate?.let { builder.and(review.rate.avg().goe(it)) }
         filter.bookmarkCount?.let { builder.and(bookmark.count().goe(it)) }
@@ -174,7 +174,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         filter.title?.let { builder.and(course.title.like("%$it%")) }
         filter.description?.let { builder.and(course.description.like("%$it%")) }
         filter.tutorNickName?.let { builder.and(course.tutor.nickname.eq(it)) }
-        filter.category?.let { builder.and(category.eq(it)) }
+        filter.category?.let { builder.and(category.name.eq(it)) }
         filter.viewCount?.let { builder.and(view.count().goe(it)) }
         filter.rate?.let { builder.and(review.rate.avg().goe(it)) }
         filter.bookmarkCount?.let { builder.and(bookmark.count().goe(it)) }
