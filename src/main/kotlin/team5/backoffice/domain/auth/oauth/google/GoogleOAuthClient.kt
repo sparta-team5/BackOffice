@@ -43,7 +43,6 @@ class GoogleOAuthClient(
             "redirect_uri" to redirectUrl,
             "code" to authorizationCode,
         )
-        println(authServerTokenUrl)
         return restClient.post()
             .uri(authServerTokenUrl)
             .contentType(MediaType.APPLICATION_FORM_URLENCODED)
