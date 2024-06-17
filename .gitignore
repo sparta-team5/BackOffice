@@ -39,7 +39,4 @@ out/
 ### Kotlin ###
 .kotlin
 application.yml
-gradle/
-gradlew.bat
-settings.gradle.kts
 sshKey.pem
