@@ -1,8 +1,9 @@
 package team5.backoffice.domain.review.model
 
+import jakarta.persistence.*
 import team5.backoffice.domain.course.model.Course
 import team5.backoffice.domain.user.model.Student
-import jakarta.persistence.*
+import java.time.LocalDateTime
 
 
 @Entity
@@ -22,6 +23,9 @@ class Review(
 
     @Column(name = "rate")
     var rate: Int,
+
+    @Column(name = "created_at")
+    val createdAt: LocalDateTime,
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

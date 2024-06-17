@@ -18,7 +18,11 @@ class SecurityConfig(
 ) {
     @Bean
     fun filterChain(http: HttpSecurity, swaggerConfig: SwaggerConfig): SecurityFilterChain {
-        return http.httpBasic { it.disable() }.formLogin { it.disable() }.csrf { it.disable() }.authorizeHttpRequests {
+        return http
+            .httpBasic { it.disable() }
+            .formLogin { it.disable() }
+            .csrf { it.disable() }
+            .authorizeHttpRequests {
                 it.requestMatchers(
                     "/auth/tutor/login",
                     "/auth/tutor/signup",
@@ -29,6 +33,8 @@ class SecurityConfig(
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/courses/all",
+                    "/courses/{courseId:\\d+}/all",
+                    "/courses/filter/all",
                     "/courses/{courseId:\\d+}/all"
                 ).permitAll().anyRequest().authenticated()
             }.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
