@@ -111,20 +111,17 @@ class CourseService(
         return CourseSimpleResponse.from(course)
     }
 
-    fun deleteCourseById(courseId: Long) {
-        val course = courseRepository.findByIdOrNull(courseId) ?: throw RuntimeException("Course not found")
-
-        @Transactional
-        fun deleteCourseById(courseId: Long, tutorId: Long) {
-            val course =
-                courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException(
-                    "course",
-                    "id: $courseId"
-                )
-            if (course.tutor.id != tutorId) throw UnauthorizedUserException()
-            courseRepository.delete(course)
-        }
+    @Transactional
+    fun deleteCourseById(courseId: Long, tutorId: Long) {
+        val course =
+            courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException(
+                "course",
+                "id: $courseId"
+            )
+        if (course.tutor.id != tutorId) throw UnauthorizedUserException()
+        courseRepository.delete(course)
     }
+
 
     @Transactional
     fun addBookmark(courseId: Long, studentId: Long) {

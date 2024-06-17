@@ -27,6 +27,7 @@ data class CourseListResponse(
             isSubscribed = isSubscribed,
             createdAt = course.createdAt,
             rate = course.rate,
+            viewCount = course.viewCount,
         )
     }
 }
