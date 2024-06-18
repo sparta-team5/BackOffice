@@ -192,10 +192,10 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         val builder = BooleanBuilder()
 
         filter.duration?.let {
-            builder.and(view.createdAt.after(it))
-            builder.and(bookmark.createdAt.after(it))
-            builder.and(subscription.createdAt.after(it))
-            builder.and(review.createdAt.after(it))
+            builder.or(view.createdAt.after(it))
+            builder.or(bookmark.createdAt.after(it))
+            builder.or(subscription.createdAt.after(it))
+            builder.or(review.createdAt.after(it))
         }
 
         val query = queryFactory
@@ -246,10 +246,10 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         val havingBuilder = BooleanBuilder()
 
         filter.duration?.let {
-            builder.and(view.createdAt.after(it))
-            builder.and(bookmark.createdAt.after(it))
-            builder.and(subscription.createdAt.after(it))
-            builder.and(review.createdAt.after(it))
+            builder.or(view.createdAt.after(it))
+            builder.or(bookmark.createdAt.after(it))
+            builder.or(subscription.createdAt.after(it))
+            builder.or(review.createdAt.after(it))
         }
         filter.viewCount?.let { havingBuilder.and(view.count().goe(it)) }
         filter.bookingCount?.let { havingBuilder.and(bookmark.count().goe(it)) }
@@ -305,10 +305,10 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         val builder = BooleanBuilder()
 
         filter.duration?.let {
-            builder.and(view.createdAt.after(it))
-            builder.and(bookmark.createdAt.after(it))
-            builder.and(subscription.createdAt.after(it))
-            builder.and(review.createdAt.after(it))
+            builder.or(view.createdAt.after(it))
+            builder.or(bookmark.createdAt.after(it))
+            builder.or(subscription.createdAt.after(it))
+            builder.or(review.createdAt.after(it))
         }
 
         val query = queryFactory
@@ -357,9 +357,9 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         val havingBuilder = BooleanBuilder()
 
         filter.duration?.let {
-            builder.and(view.createdAt.after(it))
-            builder.and(bookmark.createdAt.after(it))
-            builder.and(subscription.createdAt.after(it))
+            builder.or(view.createdAt.after(it))
+            builder.or(bookmark.createdAt.after(it))
+            builder.or(subscription.createdAt.after(it))
         }
         filter.viewCount?.let { havingBuilder.and(view.count().goe(it)) }
         filter.bookingCount?.let { havingBuilder.and(bookmark.count().goe(it)) }
@@ -407,9 +407,9 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         val builder = BooleanBuilder()
         val havingBuilder = BooleanBuilder()
 
-        filter.duration?.let { builder.and(view.createdAt.goe(it)) }
-        filter.duration?.let { builder.and(bookmark.createdAt.goe(it)) }
-        filter.duration?.let { builder.and(subscription.createdAt.goe(it)) }
+        filter.duration?.let { builder.or(view.createdAt.goe(it)) }
+        filter.duration?.let { builder.or(bookmark.createdAt.goe(it)) }
+        filter.duration?.let { builder.or(subscription.createdAt.goe(it)) }
         filter.viewCount?.let { havingBuilder.and(view.count().goe(it)) }
         filter.bookingCount?.let { havingBuilder.and(bookmark.count().goe(it)) }
         filter.subscriptionCount?.let { havingBuilder.and(subscription.count().goe(it)) }
@@ -454,11 +454,11 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
     override fun findStudentData(studentId: Long, filter: DurationFilter): StudentData? {
         val builder = BooleanBuilder()
 
-//        filter.duration?.let {
-//            builder.and(view.createdAt.after(it))
-//            builder.and(bookmark.createdAt.after(it))
-//            builder.and(subscription.createdAt.after(it))
-//        }
+        filter.duration?.let {
+            builder.or(view.createdAt.after(it))
+            builder.or(bookmark.createdAt.after(it))
+            builder.or(subscription.createdAt.after(it))
+        }
 
         val query = queryFactory.select(
             Projections.constructor(
@@ -479,12 +479,13 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             .leftJoin(review).on(student.eq(review.student))
             .where(
                 student.id.eq(studentId)
-                    .and(builder)
+//                    .or(builder)
             )
             .groupBy(
                 student.id,
                 student.nickname,
             )
+            .limit(1)
             .fetchOne()
         return query
     }
