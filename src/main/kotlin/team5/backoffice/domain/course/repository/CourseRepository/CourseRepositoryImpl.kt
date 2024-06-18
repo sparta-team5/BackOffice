@@ -138,12 +138,12 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                     .or(course.tutor.nickname.like(searchWord))
             )
         }
-        filter.category?.let { builder.and(category.name.contains(it)) }
-        filter.viewCount?.let { havingBuilder.and(view.count().goe(it)) }
-        filter.rate?.let { havingBuilder.and(review.rate.avg().goe(it)) }
-        filter.bookmarkCount?.let { havingBuilder.and(bookmark.count().goe(it)) }
-        filter.subscriptionCount?.let { havingBuilder.and(subscription.count().goe(it)) }
-        durationFilter.duration?.let { builder.and(course.createdAt.after(it)) }
+        filter.category?.let { builder.or(category.name.contains(it)) }
+        filter.viewCount?.let { havingBuilder.or(view.count().goe(it)) }
+        filter.rate?.let { havingBuilder.or(review.rate.avg().goe(it)) }
+        filter.bookmarkCount?.let { havingBuilder.or(bookmark.count().goe(it)) }
+        filter.subscriptionCount?.let { havingBuilder.or(subscription.count().goe(it)) }
+        durationFilter.duration?.let { builder.or(course.createdAt.after(it)) }
 
         val query = queryFactory
             .select(
@@ -252,10 +252,10 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             builder.or(subscription.createdAt.after(it))
             builder.or(review.createdAt.after(it))
         }
-        filter.viewCount?.let { havingBuilder.and(view.count().goe(it)) }
-        filter.bookingCount?.let { havingBuilder.and(bookmark.count().goe(it)) }
-        filter.subscriptionCount?.let { havingBuilder.and(subscription.count().goe(it)) }
-        filter.rateLimit?.let { havingBuilder.and(review.rate.avg().goe(it)) }
+        filter.viewCount?.let { havingBuilder.or(view.count().goe(it)) }
+        filter.bookingCount?.let { havingBuilder.or(bookmark.count().goe(it)) }
+        filter.subscriptionCount?.let { havingBuilder.or(subscription.count().goe(it)) }
+        filter.rateLimit?.let { havingBuilder.or(review.rate.avg().goe(it)) }
 
 
         val query = queryFactory
@@ -362,10 +362,10 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             builder.or(bookmark.createdAt.after(it))
             builder.or(subscription.createdAt.after(it))
         }
-        filter.viewCount?.let { havingBuilder.and(view.count().goe(it)) }
-        filter.bookingCount?.let { havingBuilder.and(bookmark.count().goe(it)) }
-        filter.subscriptionCount?.let { havingBuilder.and(subscription.count().goe(it)) }
-        filter.rateLimit?.let { havingBuilder.and(review.rate.avg().goe(it)) }
+        filter.viewCount?.let { havingBuilder.or(view.count().goe(it)) }
+        filter.bookingCount?.let { havingBuilder.or(bookmark.count().goe(it)) }
+        filter.subscriptionCount?.let { havingBuilder.or(subscription.count().goe(it)) }
+        filter.rateLimit?.let { havingBuilder.or(review.rate.avg().goe(it)) }
 
         val query = queryFactory
             .select(
