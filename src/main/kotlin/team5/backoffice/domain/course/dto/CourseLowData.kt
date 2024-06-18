@@ -1,13 +1,12 @@
 package team5.backoffice.domain.course.dto
 
-import team5.backoffice.domain.user.model.Tutor
 import java.time.LocalDateTime
 
 data class CourseLowData (
     val id : Long,
     val title : String,
     val description : String,
-    val tutor : Tutor,
+    val tutorName : String,
     val categoryName : String,
     val imageUrl : String,
     val createdAt : LocalDateTime,

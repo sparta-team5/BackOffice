@@ -36,7 +36,7 @@ class SecurityConfig(
                     "/courses/{courseId:\\d+}/all",
                     "/courses/filter/all",
                     "/courses/{courseId:\\d+}/all"
-                ).permitAll().anyRequest().authenticated()
+                ).permitAll().anyRequest().permitAll()
             }.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .exceptionHandling {
                 it.authenticationEntryPoint(authenticationEntryPoint)

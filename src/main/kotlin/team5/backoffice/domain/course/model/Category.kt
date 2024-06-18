@@ -11,8 +11,5 @@ class Category(
     @Id
     @Column(name = "name")
     val name: String,
-
-    @Column(name = "count")
-    var count: Long
 ) {
 }

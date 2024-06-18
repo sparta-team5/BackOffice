@@ -10,6 +10,7 @@ import team5.backoffice.domain.course.repository.BookmarkRepository
 import team5.backoffice.domain.course.repository.CategoryRepository
 import team5.backoffice.domain.course.repository.CourseRepository.CourseRepository
 import team5.backoffice.domain.course.repository.SubscriptionRepository
+import team5.backoffice.domain.course.repository.ViewRepository
 import team5.backoffice.domain.exception.ModelNotFoundException
 import team5.backoffice.domain.exception.UnauthorizedUserException
 import team5.backoffice.domain.user.repository.StudentRepository
@@ -24,23 +25,26 @@ class CourseService(
     private val bookmarkRepository: BookmarkRepository,
     private val categoryRepository: CategoryRepository,
     private val tutorRepository: TutorRepository,
+    private val viewRepository: ViewRepository,
 ) {
 
-    @Transactional
+
     fun getAllCourses(cursor: CursorRequest, pageSize: Int, studentId: Long?): CursorPageResponse {
-        val courses = coursesToListResponse(courseRepository.findAllCourses(cursor, pageSize), studentId)
+        val courses = courseRepository.findAllCourses(cursor, pageSize)
         val nextCursor = when (cursor.cursorOrderType) {
             OrderType.createdAt -> courses.lastOrNull()?.createdAt ?: LocalDateTime.now()
             OrderType.viewCount -> courses.lastOrNull()?.viewCount ?: Long.MAX_VALUE
             else -> null
         }
-        return CursorPageResponse(courses, nextCursor)
+        val course = coursesToListResponse(courses, studentId)
+        return CursorPageResponse(course, nextCursor)
     }
 
     fun getCourseById(courseId: Long, studentId: Long?): CourseResponse {
         val course =
             courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
         return if (studentId != null) {
+            viewSave(courseId, studentId)
             CourseResponse.from(
                 course,
                 isBookmarkExists(courseId, studentId),
@@ -57,6 +61,7 @@ class CourseService(
                 getCourseViewCount(courseId)
             )
         }
+
     }
 
     @Transactional
@@ -203,6 +208,20 @@ class CourseService(
 
     private fun getCourseViewCount(courseId: Long): Long {
         return courseRepository.getCourseViewSum(courseId)
+    }
+
+    private fun viewSave(courseId: Long, studentId: Long) {
+        val course =
+            courseRepository.findByIdOrNull(courseId) ?: throw ModelNotFoundException("course", "id: $courseId")
+        val student =
+            studentRepository.findByIdOrNull(studentId) ?: throw ModelNotFoundException("student", "id: $studentId")
+        viewRepository.save(
+            View(
+                LocalDateTime.now(),
+                course,
+                student
+            )
+        )
     }
 }
 

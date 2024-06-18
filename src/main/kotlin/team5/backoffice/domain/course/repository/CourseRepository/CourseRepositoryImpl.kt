@@ -5,7 +5,14 @@ import com.querydsl.core.types.Projections
 import com.querydsl.jpa.impl.JPAQuery
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
-import team5.backoffice.domain.course.dto.*
+import team5.backoffice.domain.backoffice.dto.CourseBackOfficeFilters
+import team5.backoffice.domain.backoffice.dto.StudentBackOfficeFilters
+import team5.backoffice.domain.backoffice.dto.StudentData
+import team5.backoffice.domain.backoffice.dto.TutorLowData
+import team5.backoffice.domain.course.dto.CourseLowData
+import team5.backoffice.domain.course.dto.CursorRequest
+import team5.backoffice.domain.course.dto.DurationFilter
+import team5.backoffice.domain.course.dto.FilteringRequest
 import team5.backoffice.domain.course.model.*
 import team5.backoffice.domain.review.model.QReview
 import team5.backoffice.domain.user.model.QFollow
@@ -28,8 +35,8 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
 
     override fun getCourseAvgRate(courseId: Long): Double {
         return queryFactory.select(review.rate.avg())
-            .from(course)
-            .join(course, review.course)
+            .from(review)
+            .join(course).on(course.eq(review.course))
             .where(course.id.eq(courseId))
             .groupBy(course)
             .fetchOne() ?: 0.0
@@ -37,8 +44,8 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
 
     override fun getCourseViewSum(courseId: Long): Long {
         return queryFactory.select(view.count())
-            .from(course)
-//            .join(course, view.courses)
+            .from(view)
+            .join(course).on(course.eq(view.course))
             .where(course.id.eq(courseId))
             .groupBy(course)
             .fetchOne() ?: 0
@@ -51,7 +58,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                 course.id,
                 course.title,
                 course.description,
-                course.tutor,
+                course.tutor.nickname,
                 category.name,
                 course.imageUrl,
                 course.createdAt,
@@ -70,17 +77,20 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                 course.id,
                 course.title,
                 course.description,
-                course.tutor,
+                course.tutor.nickname,
                 category.name,
                 course.imageUrl,
-                course.createdAt
+                course.createdAt,
+                review.rate.avg(),
+                view.count(),
+                bookmark.count(),
+                subscription.count(),
             )
             .having(applyCursorPosition(cursor))
             .applyOrderBy(cursor.cursorOrderType)
             .orderBy(course.id.desc())
             .limit(pageSize.toLong())
             .fetch()
-
         return query
     }
 
@@ -119,18 +129,20 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         val builder = BooleanBuilder()
         val havingBuilder = BooleanBuilder()
 
-        filter.title?.let { builder.and(course.title.like("%$it%")) }
-        filter.description?.let { builder.and(course.description.like("%$it%")) }
-        filter.tutorNickName?.let { builder.and(course.tutor.nickname.eq(it)) }
-        filter.category?.let { builder.and(category.name.eq(it)) }
+        filter.word?.let {
+            val searchWord = "%$it%"
+            builder.and(
+                course.title.like(searchWord)
+                    .or(course.description.like(searchWord))
+                    .or(course.tutor.nickname.like(searchWord))
+            )
+        }
+        filter.category?.let { builder.and(category.name.contains(it)) }
         filter.viewCount?.let { havingBuilder.and(view.count().goe(it)) }
         filter.rate?.let { havingBuilder.and(review.rate.avg().goe(it)) }
         filter.bookmarkCount?.let { havingBuilder.and(bookmark.count().goe(it)) }
         filter.subscriptionCount?.let { havingBuilder.and(subscription.count().goe(it)) }
-        durationFilter.duration?.let { builder.and(view.createdAt.after(it)) }
-        durationFilter.duration?.let { builder.and(bookmark.createdAt.after(it)) }
-        durationFilter.duration?.let { builder.and(subscription.createdAt.after(it)) }
-        durationFilter.duration?.let { builder.and(review.createdAt.after(it)) }
+        durationFilter.duration?.let { builder.and(course.createdAt.after(it)) }
 
         val query = queryFactory
             .select(
@@ -139,7 +151,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                     course.id,
                     course.title,
                     course.description,
-                    course.tutor,
+                    course.tutor.nickname,
                     category.name,
                     course.imageUrl,
                     course.createdAt,
@@ -159,10 +171,10 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                 course.id,
                 course.title,
                 course.description,
-                course.tutor,
+                course.tutor.nickname,
                 category.name,
                 course.imageUrl,
-                course.createdAt
+                course.createdAt,
             )
             .having(havingBuilder)
             .applyOrderBy(filter.orderType)
@@ -173,26 +185,18 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
         return query
     }
 
-    override fun findCoursesInfoByTutor(
+    override fun findTutorData(
         tutorId: Long,
-        pageable: Pageable,
-        filter: FilteringRequest,
-        durationFilter: DurationFilter
-    ): List<TutorLowData> {
+        filter: DurationFilter
+    ): TutorLowData? {
         val builder = BooleanBuilder()
 
-        filter.title?.let { builder.and(course.title.like("%$it%")) }
-        filter.description?.let { builder.and(course.description.like("%$it%")) }
-        filter.tutorNickName?.let { builder.and(course.tutor.nickname.eq(it)) }
-        filter.category?.let { builder.and(category.name.eq(it)) }
-        filter.viewCount?.let { builder.and(view.count().goe(it)) }
-        filter.rate?.let { builder.and(review.rate.avg().goe(it)) }
-        filter.bookmarkCount?.let { builder.and(bookmark.count().goe(it)) }
-        filter.subscriptionCount?.let { builder.and(subscription.count().goe(it)) }
-        durationFilter.duration?.let { builder.and(view.createdAt.after(it)) }
-        durationFilter.duration?.let { builder.and(bookmark.createdAt.after(it)) }
-        durationFilter.duration?.let { builder.and(subscription.createdAt.after(it)) }
-        durationFilter.duration?.let { builder.and(review.createdAt.after(it)) }
+        filter.duration?.let {
+            builder.and(view.createdAt.after(it))
+            builder.and(bookmark.createdAt.after(it))
+            builder.and(subscription.createdAt.after(it))
+            builder.and(review.createdAt.after(it))
+        }
 
         val query = queryFactory
             .select(
@@ -203,7 +207,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                     subscription.count(),
                     bookmark.count(),
                     follow.count(),
-                    review.rate.avg(),
+                    review.rate.avg()
                 )
             )
             .from(course)
@@ -217,38 +221,10 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                 course.tutor.id.eq(tutorId)
                     .and(builder)
             )
-            .groupBy(course.id)
-            .offset(pageable.offset)
-            .limit(pageable.pageSize.toLong())
-            .fetch()
+            .fetchOne()
 
         return query
     }
-
-//    fun findMyStudentInfo(
-//        tutorId: Long,
-//        pageable: Pageable,
-//        studentFilter: SomethingFilter,
-//        groupType: String,
-//        durationFilter: DurationFilter
-//    ): List<Student> {
-//        val builder = BooleanBuilder()
-//        val student = QStudent.student
-//
-//        //TODO: 필터
-//
-//        val query = queryFactory.select(student)
-//            .from(student)
-//            .leftJoin(follow).on(follow.student.id.eq(student.id))
-//            .leftJoin(tutor).on(follow.tutor.id.eq(tutor.id))
-//            .leftJoin(student).on(student.id.eq(view.student.id))
-//            .where(tutor.id.eq(tutorId))
-//            .applyGroupBy(groupType)
-//            .offset(pageable.offset)
-//            .limit(pageable.pageSize.toLong())
-//            .fetch()
-//        return query
-//    }
 
 //    // 데이터별 학생 수를 구하기 위한 groupBy 지정 함수 이 함수 사용시 student.count()가 반드시 필요함
 //    private fun <T> JPAQuery<T>.applyGroupBy(groupType: String): JPAQuery<T> {
@@ -260,22 +236,257 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
 //        }
 //    }
 
-    //나를 팔로우한 학생이 내 코스를 얼마나 구독했는가
-//    fun findMyStudentWhoSubscribeTutor(tutorId: Long): List<Tuple> {
-//
-//
-//        val query = queryFactory.select(student, student.count())
-//            .from(student)
-//            .join(follow).on(student.eq(follow.student))
-//            .join(subscription).on(student.eq(subscription.student))
-//            .where(follow.tutor.id.eq(tutorId))
-//            .groupBy(student) // 학생별로 몇개의 코스를 구독했는가
-//            .fetch()
-//        return query
-//    }
 
-//     아직 student 에 필드가 없어 단순 객체 반환으로 구현해 봤습니다.
-//
-//    duration filter 사용시 해당 타입의 지정 시간 이후의 데이터만 구할 수 있습니다
+    override fun findMyCoursesData(
+        tutorId: Long?,
+        pageable: Pageable,
+        filter: CourseBackOfficeFilters
+    ): List<CourseLowData> {
+        val builder = BooleanBuilder()
+        val havingBuilder = BooleanBuilder()
+
+        filter.duration?.let {
+            builder.and(view.createdAt.after(it))
+            builder.and(bookmark.createdAt.after(it))
+            builder.and(subscription.createdAt.after(it))
+            builder.and(review.createdAt.after(it))
+        }
+        filter.viewCount?.let { havingBuilder.and(view.count().goe(it)) }
+        filter.bookingCount?.let { havingBuilder.and(bookmark.count().goe(it)) }
+        filter.subscriptionCount?.let { havingBuilder.and(subscription.count().goe(it)) }
+        filter.rateLimit?.let { havingBuilder.and(review.rate.avg().goe(it)) }
+
+
+        val query = queryFactory
+            .select(
+                Projections.constructor(
+                    CourseLowData::class.java,
+                    course.id,
+                    course.title,
+                    course.description,
+                    course.tutor.nickname,
+                    course.category.name,
+                    course.imageUrl,
+                    course.createdAt,
+                    review.rate.avg(),
+                    view.count(),
+                    bookmark.count(),
+                    subscription.count()
+                )
+            )
+            .from(course)
+            .leftJoin(review).on(course.eq(review.course))
+            .leftJoin(view).on(course.eq(view.course))
+            .leftJoin(bookmark).on(course.eq(bookmark.course))
+            .leftJoin(subscription).on(course.eq(subscription.course))
+            .where(
+                course.tutor.id.eq(tutorId)
+                    .and(builder)
+            )
+            .groupBy(
+                course.id,
+                course.title,
+                course.description,
+                course.tutor.nickname,
+                category.name,
+                course.imageUrl,
+                course.createdAt,
+            )
+            .having(havingBuilder)
+            .applyOrderBy(filter.orderType)
+            .orderBy(course.id.desc())
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .fetch()
+        return query
+    }
+
+    override fun findMyCourse(courseId: Long, filter: DurationFilter): CourseLowData? {
+        val builder = BooleanBuilder()
+
+        filter.duration?.let {
+            builder.and(view.createdAt.after(it))
+            builder.and(bookmark.createdAt.after(it))
+            builder.and(subscription.createdAt.after(it))
+            builder.and(review.createdAt.after(it))
+        }
+
+        val query = queryFactory
+            .select(
+                Projections.constructor(
+                    CourseLowData::class.java,
+                    course.id,
+                    course.title,
+                    course.description,
+                    course.tutor.nickname,
+                    course.category.name,
+                    course.imageUrl,
+                    course.createdAt,
+                    review.rate.avg(),
+                    view.count(),
+                    bookmark.count(),
+                    subscription.count()
+                )
+            )
+            .from(course)
+            .leftJoin(review).on(course.eq(review.course))
+            .leftJoin(view).on(course.eq(view.course))
+            .leftJoin(bookmark).on(course.eq(bookmark.course))
+            .leftJoin(subscription).on(course.eq(subscription.course))
+            .where(course.id.eq(courseId))
+            .groupBy(
+                course.id,
+                course.title,
+                course.description,
+                course.tutor.nickname,
+                course.category.name,
+                course.imageUrl,
+                course.createdAt
+            )
+            .having(builder)
+            .fetchOne()
+        return query
+    }
+
+    override fun findMyCourseStudentData(
+        courseId: Long,
+        filter: StudentBackOfficeFilters,
+        pageable: Pageable
+    ): List<StudentData> {
+        val builder = BooleanBuilder()
+        val havingBuilder = BooleanBuilder()
+
+        filter.duration?.let {
+            builder.and(view.createdAt.after(it))
+            builder.and(bookmark.createdAt.after(it))
+            builder.and(subscription.createdAt.after(it))
+        }
+        filter.viewCount?.let { havingBuilder.and(view.count().goe(it)) }
+        filter.bookingCount?.let { havingBuilder.and(bookmark.count().goe(it)) }
+        filter.subscriptionCount?.let { havingBuilder.and(subscription.count().goe(it)) }
+        filter.rateLimit?.let { havingBuilder.and(review.rate.avg().goe(it)) }
+
+        val query = queryFactory
+            .select(
+                Projections.constructor(
+                    StudentData::class.java,
+                    student.id,
+                    student.nickname,
+                    view.count(),
+                    bookmark.count(),
+                    subscription.count(),
+                    review.rate.avg(),
+                )
+            )
+            .from(student)
+            .leftJoin(view).on(student.eq(view.student))
+            .leftJoin(subscription).on(student.eq(subscription.student))
+            .leftJoin(bookmark).on(student.eq(bookmark.student))
+            .leftJoin(review).on(student.eq(review.student))
+            .leftJoin(follow).on(student.eq(follow.student))
+            .where(
+                subscription.course.id.eq(courseId)
+                    .and(builder)
+            )
+            .groupBy(
+                student.id,
+                student.nickname
+            )
+            .having(havingBuilder)
+            .applyOrderBy(filter.orderType)
+            .orderBy(student.id.desc())
+            .fetch()
+        return query
+    }
+
+    override fun findMyStudentsData(
+        tutorId: Long?,
+        filter: StudentBackOfficeFilters,
+        pageable: Pageable
+    ): List<StudentData> {
+        val builder = BooleanBuilder()
+        val havingBuilder = BooleanBuilder()
+
+        filter.duration?.let { builder.and(view.createdAt.goe(it)) }
+        filter.duration?.let { builder.and(bookmark.createdAt.goe(it)) }
+        filter.duration?.let { builder.and(subscription.createdAt.goe(it)) }
+        filter.viewCount?.let { havingBuilder.and(view.count().goe(it)) }
+        filter.bookingCount?.let { havingBuilder.and(bookmark.count().goe(it)) }
+        filter.subscriptionCount?.let { havingBuilder.and(subscription.count().goe(it)) }
+        filter.rateLimit?.let { havingBuilder.and(review.rate.avg().goe(it)) }
+
+        val query = queryFactory
+            .select(
+                Projections.constructor(
+                    StudentData::class.java,
+                    student.id,
+                    student.nickname,
+                    view.count(),
+                    bookmark.count(),
+                    subscription.count(),
+                    review.rate.avg(),
+                )
+            )
+            .from(student)
+            .leftJoin(follow).on(student.eq(follow.student))
+            .leftJoin(subscription).on(student.eq(subscription.student))
+            .leftJoin(bookmark).on(student.eq(bookmark.student))
+            .leftJoin(view).on(student.eq(view.student))
+            .leftJoin(review).on(student.eq(review.student))
+            .where(
+                follow.tutor.id.eq(tutorId)
+                    .and(builder)
+            )
+            .groupBy(
+                student.id,
+                student.nickname
+            )
+            .having(builder)
+            .having(havingBuilder)
+            .applyOrderBy(filter.orderType)
+            .orderBy(student.id.desc())
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .fetch()
+        return query
+    }
+
+    override fun findStudentData(studentId: Long, filter: DurationFilter): StudentData? {
+        val builder = BooleanBuilder()
+
+//        filter.duration?.let {
+//            builder.and(view.createdAt.after(it))
+//            builder.and(bookmark.createdAt.after(it))
+//            builder.and(subscription.createdAt.after(it))
+//        }
+
+        val query = queryFactory.select(
+            Projections.constructor(
+                StudentData::class.java,
+                student.id,
+                student.nickname,
+                view.count(),
+                bookmark.count(),
+                subscription.count(),
+                review.rate.avg(),
+            )
+        )
+            .from(student)
+            .leftJoin(follow).on(student.eq(follow.student))
+            .leftJoin(subscription).on(student.eq(subscription.student))
+            .leftJoin(bookmark).on(student.eq(bookmark.student))
+            .leftJoin(view).on(student.eq(view.student))
+            .leftJoin(review).on(student.eq(review.student))
+            .where(
+                student.id.eq(studentId)
+                    .and(builder)
+            )
+            .groupBy(
+                student.id,
+                student.nickname,
+            )
+            .fetchOne()
+        return query
+    }
 }
 
