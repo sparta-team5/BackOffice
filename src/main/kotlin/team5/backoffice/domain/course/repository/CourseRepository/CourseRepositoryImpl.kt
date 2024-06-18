@@ -33,6 +33,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
     private val student = QStudent.student
     private val tutor = QTutor.tutor
 
+
     override fun getCourseAvgRate(courseId: Long): Double {
         return queryFactory.select(review.rate.avg())
             .from(review)
