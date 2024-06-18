@@ -44,7 +44,7 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
     }
 
     override fun getCourseViewSum(courseId: Long): Long {
-        return queryFactory.select(view.count())
+        return queryFactory.select(view.countDistinct())
             .from(view)
             .join(course).on(course.eq(view.course))
             .where(course.id.eq(courseId))
@@ -64,9 +64,9 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                 course.imageUrl,
                 course.createdAt,
                 review.rate.avg(),
-                view.count(),
-                bookmark.count(),
-                subscription.count(),
+                view.countDistinct(),
+                bookmark.countDistinct(),
+                subscription.countDistinct(),
             )
         )
             .from(course)
@@ -83,9 +83,9 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                 course.imageUrl,
                 course.createdAt,
                 review.rate.avg(),
-                view.count(),
-                bookmark.count(),
-                subscription.count(),
+                view.countDistinct(),
+                bookmark.countDistinct(),
+                subscription.countDistinct(),
             )
             .having(applyCursorPosition(cursor))
             .applyOrderBy(cursor.cursorOrderType)
@@ -157,9 +157,9 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                     course.imageUrl,
                     course.createdAt,
                     review.rate.avg(),
-                    view.count(),
-                    bookmark.count(),
-                    subscription.count(),
+                    view.id.countDistinct(),
+                    bookmark.id.countDistinct(),
+                    subscription.id.countDistinct(),
                 )
             )
             .from(course)
@@ -203,11 +203,11 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
             .select(
                 Projections.constructor(
                     TutorLowData::class.java,
-                    view.count(),
-                    course.count(),
-                    subscription.count(),
-                    bookmark.count(),
-                    follow.count(),
+                    view.countDistinct(),
+                    course.countDistinct(),
+                    subscription.countDistinct(),
+                    bookmark.countDistinct(),
+                    follow.countDistinct(),
                     review.rate.avg()
                 )
             )
@@ -270,9 +270,9 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                     course.imageUrl,
                     course.createdAt,
                     review.rate.avg(),
-                    view.count(),
-                    bookmark.count(),
-                    subscription.count()
+                    view.countDistinct(),
+                    bookmark.countDistinct(),
+                    subscription.countDistinct()
                 )
             )
             .from(course)
@@ -324,9 +324,9 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                     course.imageUrl,
                     course.createdAt,
                     review.rate.avg(),
-                    view.count(),
-                    bookmark.count(),
-                    subscription.count()
+                    view.countDistinct(),
+                    bookmark.countDistinct(),
+                    subscription.countDistinct()
                 )
             )
             .from(course)
@@ -373,9 +373,9 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                     StudentData::class.java,
                     student.id,
                     student.nickname,
-                    view.count(),
-                    bookmark.count(),
-                    subscription.count(),
+                    view.countDistinct(),
+                    bookmark.countDistinct(),
+                    subscription.countDistinct(),
                     review.rate.avg(),
                 )
             )
@@ -422,9 +422,9 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                     StudentData::class.java,
                     student.id,
                     student.nickname,
-                    view.count(),
-                    bookmark.count(),
-                    subscription.count(),
+                    view.countDistinct(),
+                    bookmark.countDistinct(),
+                    subscription.countDistinct(),
                     review.rate.avg(),
                 )
             )
@@ -466,9 +466,9 @@ class CourseRepositoryImpl : CustomCourseRepository, QueryDslSupport() {
                 StudentData::class.java,
                 student.id,
                 student.nickname,
-                view.count(),
-                bookmark.count(),
-                subscription.count(),
+                view.countDistinct(),
+                bookmark.countDistinct(),
+                subscription.countDistinct(),
                 review.rate.avg(),
             )
         )
